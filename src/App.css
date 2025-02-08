@@ -1,0 +1,208 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+body{
+  scroll-behavior: smooth;
+}
+header{
+  width: 100%;
+  height: 65px;
+  background-color: black;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo{
+  color: white;
+  font-family: poppins;
+  margin-left: 30px;
+  font-size: 25px;
+  font-weight: bolder;
+}
+.menu-bar{
+  width: 400px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+.menu-bar a{
+  color: white;
+  text-decoration: none;
+  font-family: poppins;
+  margin-right: 30px;
+}
+.hero-section{
+  width: 100%;
+  height: 450px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffd32c;
+}
+.hero-information{
+  width: 50%;
+  height: 100%;
+}
+.hero-information p{
+  width: 500px;
+  margin-left: 30px;
+  font-size: 27px;
+  font-family: poppins;
+  font-weight: bold;
+}
+.hero-book{
+  width: 50%;
+  height: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-direction : column;
+}
+.map-container{
+  width: 90%;
+  height: 92%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  overflow: hidden;
+}
+.mapboxgl-ctrl-geocoder{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: auto;
+}
+.mapboxgl-ctrl-geocoder svg{
+  display: none;
+}
+.mapboxgl-ctrl-geocoder input{
+  border: none;
+  border-radius: 7px;
+  height: 30px;
+  width: 300px;
+  padding: 5px;
+  font-family: Poppins;
+}
+.add-space-container{
+  width: 100%;
+  height: 500px;
+  background-color: #ffd32c;
+  margin-top: 40px;
+}
+.search-state{
+  width: 100%;
+  border-radius:7px;
+  position: relative;
+}
+.search-state input{
+  width: 80%;
+  padding: 10px;
+  border: 0px;
+  border-radius: 7px;
+  font-family: poppins;
+  font-weight: bold;
+  border: 1px solid black;
+
+}
+.search-state input:focus{
+  outline: none;
+}
+.searched-list{
+  width: 83%;
+  max-height: 250px;
+  height: 170px;
+  background-color: white;
+  border-radius: 7px;
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  gap: 5px;
+  overflow-y: scroll;
+}
+.searched-list::-webkit-scrollbar{
+  display: none;
+}
+.suggestion-place{
+  width: 100%;
+  height: 45px;
+  padding: 5px;
+  border-bottom: 1px solid rgb(192, 192, 192);
+  cursor: pointer;  
+}
+.suggestion-place p{
+  margin: 0px;
+  margin-left: 20px;
+  max-width: 300px; /* Adjust as needed */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: poppins;
+}
+.add-space-form{
+  width: 400px;
+  height: auto;
+  display:flex;
+  flex-direction:column;
+  font-family: Poppins;
+  margin-left:30px
+}
+.add-space-form input{
+  border:0px; 
+  padding:10px;
+  font-family:Poppins;
+  border-radius:7px;
+  font-weight:bold;
+  cursor: pointer;
+}
+.add-space-form input:focus{
+  outline:none;
+}
+.add-space-form label{
+  font-family:poppins;
+  font-size:14px;
+  margin:0px;
+  margin-bottom:2px;
+  margin-top:15px;
+  margin-left:5px
+}
