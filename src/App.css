@@ -37,6 +37,9 @@
   }
 }
 
+canvas{
+  border-radius: 10px;
+}
 
 body{
   scroll-behavior: smooth;
@@ -124,7 +127,7 @@ header{
 }
 .add-space-container{
   width: 100%;
-  height: 500px;
+  height: 1000px;
   background-color: #ffd32c;
   margin-top: 40px;
 }
@@ -165,7 +168,7 @@ header{
 }
 .suggestion-place{
   width: 100%;
-  height: 45px;
+  height: auto;
   padding: 5px;
   border-bottom: 1px solid rgb(192, 192, 192);
   cursor: pointer;  
@@ -173,14 +176,14 @@ header{
 .suggestion-place p{
   margin: 0px;
   margin-left: 20px;
-  max-width: 300px; /* Adjust as needed */
-  white-space: nowrap;
+  max-width: 400px; /* Adjust as needed */
   overflow: hidden;
   text-overflow: ellipsis;
+  word-wrap:break-word;
   font-family: poppins;
 }
 .add-space-form{
-  width: 400px;
+  width: 600px;
   height: auto;
   display:flex;
   flex-direction:column;
@@ -205,4 +208,90 @@ header{
   margin-bottom:2px;
   margin-top:15px;
   margin-left:5px
+}
+.space-type{
+  width: auto;
+  height: 50px;
+}
+
+/* Hide the default file input */
+.file-input {
+  display: none;
+}
+
+/* Custom button style */
+.custom-file-label {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: 1px dashed black;
+  background-color: white;
+  color: black;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+
+/* Hide the checkboxes */
+.btn-check {
+  display: none;
+}
+
+/* Style the labels as buttons */
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border: 2px solid rgba(207, 207, 207, 0.282);
+  background-color: white;
+  color: rgba(151, 151, 151, 0.773);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  margin: 5px;
+}
+
+/* Change style when the checkbox is checked */
+.btn-check:checked + .btn {
+  background-color: white;
+  border-color: black;
+  color: black;
+}
+.mid-strip{
+  width: 100%;
+  height: 250px;
+  background-color: rgb(232, 232, 232);
+  margin-top: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+}
+.mid-strip p{
+  font-family: poppins;
+  font-size: 65px;
+  font-weight: bold;
+  margin-left: 20px;
+}
+.mid-strip img{
+  mix-blend-mode: color-burn;
+  width: 100px;
+  height: 100px;
+  margin-left: 100px;
+}
+.bank-details{
+  display: none;
+}
+.upload{
+  width: 150px;
+  height: 40px;
+  border: 0px;
+  border-radius: 7px;
+  margin-top: 10px;
+  font-family: poppins;
+  font-weight: bold;
+  background-color: black;
+  color: white;
+  cursor: pointer;
 }

@@ -1,6 +1,7 @@
 import './App.css';
 import AddSpace from './Components/AddSpace';
 import MapComponent from './Components/MapComponent';
+import HereWeGo from './Components/HereWeGo';
 
 function App() {
   return (
@@ -19,8 +20,12 @@ function App() {
           <p>Rent your unused parking space and help reduce traffic.</p>
         </div>
         <div className='hero-book'>
-            <MapComponent />
+            <HereWeGo />
         </div>
+      </div>
+      <div className='mid-strip'>
+        <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9cKxiHkSd5yxc3G6Qnu3lgYaAIWdzy-htFA&s'></img>
+        <p>Mapbox</p>
       </div>
       <AddSpace/>
     </>

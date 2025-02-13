@@ -11,6 +11,7 @@ const MapComponent = () => {
   const [location, setLocation] = useState({ lat: null, lng: null });
   const [suggestions, setSuggestions] = useState([]); // Store place suggestions
   const mapContainerRef = useRef(null);
+  const [marker, setMarker] = useState(null);
   const mapRef = useRef(null);
 
   useEffect(() => {
@@ -27,7 +28,6 @@ const MapComponent = () => {
       zoom: 14,
     });
 
-
     // Store map reference
     mapRef.current = map;
 
@@ -35,17 +35,14 @@ const MapComponent = () => {
     return () => {
       map.remove();
     };
-  }, [location]);
+  }, [location,marker]);
 
   const handleSearch = async (input) => {
     if (!input.trim()) return; // Prevent empty searches
 
     try {
       const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-          input
-        )}.json?access_token=pk.eyJ1IjoiYWFkaXR5YTE0OSIsImEiOiJjbTV3Mmt5azUwNHNsMm9zNGdtbHd2NjR4In0.HC2t664_Z1Uw6ANn1oUD8A`
-      );
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(input)}.json?access_token=pk.eyJ1IjoiYWFkaXR5YTE0OSIsImEiOiJjbTV3Mmt5azUwNHNsMm9zNGdtbHd2NjR4In0.HC2t664_Z1Uw6ANn1oUD8A`);
       const data = await response.json();
 
       if (data.features.length > 0) {
@@ -76,13 +73,6 @@ const MapComponent = () => {
     console.log(location)
     setSuggestions([]); // Clear suggestions
   };
-
-
-
-  // fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/Akurdi.json?access_token=pk.eyJ1IjoiYWFkaXR5YTE0OSIsImEiOiJjbTV3Mmt5azUwNHNsMm9zNGdtbHd2NjR4In0.HC2t664_Z1Uw6ANn1oUD8A`)
-  //   .then(response => response.json())
-  //   .then(data => console.log(data.features[0].place_name));
-
 
   return (
     <div className='map-container'>
