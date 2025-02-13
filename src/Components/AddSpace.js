@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import '../App.css'
 import { db } from '../firebase';
-import { onValue,ref,getDatabase,set } from 'firebase/database';
+import MapComponent from './MapComponent';
+import { onValue,ref,getDatabase,setLocation } from 'firebase/database';
 import { v4 as uuidv4 } from "uuid"; // Generate unique IDs
 
 
 function AddSpace(){
+
+  const [setLocation,setSetLocation] = useState({lat:0,lng:0})
   const [data,setData] = useState({})
   const [decoration, setDecoration] = useState({ display: "none",color:'red',fontWeight:'bold' });
   const [warning, setWaring] = useState({ display: "none" });
@@ -21,8 +24,6 @@ function AddSpace(){
     IFSC: "",
     image: null, // Store uploaded image
   });
-
-
 
   const Validite = () => {
     const IfscInput = document.getElementById('ifsc-input');
@@ -63,7 +64,7 @@ function AddSpace(){
     }
   };
 
-
+  console.log(setLocation)
  // Submit form and save data to Firebase Realtime Database
  const UploadSpace = (event) => {
   event.preventDefault();
@@ -77,14 +78,12 @@ function AddSpace(){
     image: imageName, // Save image name only
   };
 
-  set(ref(db, `parkingSpaces/${spaceId}`), newSpaceDetails)
+  setLocation(ref(db, `parkingSpaces/${spaceId}`), newSpaceDetails)
     .then(() => alert("Parking space added successfully!"))
     .catch((error) => console.error("Error saving data:", error));
 
   console.log("Save image manually as:", `/src/assets/${imageName}`);
 };
-
-
 
   return (
     <>
@@ -97,7 +96,10 @@ function AddSpace(){
             <label>Age*</label>
             <input type='text' placeholder='Age*' name='age' onChange={handleChange}></input>
              <label>Add parking Location(stay near the parking location to ge the location)</label>
-            <input type='text' placeholder='Parking Location' name='parking' onChange={handleChange}></input>
+            <input type='text' placeholder='Parking Location' name='parking' value={setLocation.lat +',' + setLocation.lng}></input>
+            <div className='park-space-search'>
+              <MapComponent onSetLocation={setSetLocation} />
+            </div>
             <span style={{marginTop:'20px'}}>
                 <label style={{fontWeight:'bolder'}}>Do you own this space?</label>
                 <span>

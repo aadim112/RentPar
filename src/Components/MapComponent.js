@@ -4,15 +4,21 @@ import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css"; // Import Geocoder CSS
 
-const MapComponent = () => {
+const MapComponent = ({ onSetLocation }) => {
   const [query, setQuery] = useState("");
 
   //Getting users live location:
-  const [location, setLocation] = useState({ lat: null, lng: null });
+  const [location, setLocation] = useState({ lat: 0, lng: 0 });
   const [suggestions, setSuggestions] = useState([]); // Store place suggestions
   const mapContainerRef = useRef(null);
   const [marker, setMarker] = useState(null);
   const mapRef = useRef(null);
+
+  useEffect(() => {
+    if(onSetLocation){
+      onSetLocation(location);
+    }
+  },[location])
 
   useEffect(() => {
     if (!mapContainerRef.current) return; // Ensure ref is available
@@ -70,14 +76,17 @@ const MapComponent = () => {
   const handleSelect = (place) => {
     setQuery(place.place_name); // Set the selected place in the input
     setLocation({lat:place.center[0],lng:place.center[1]});
-    console.log(location)
+    //console.log(location);
     setSuggestions([]); // Clear suggestions
   };
 
   return (
     <div className='map-container'>
     <form className='search-state'>
+      <div style={{width:'1000px',display:'flex',alignItems:'center',}}>
       <input type="text" placeholder="Destination" onChange={handleInputChange} value={query}></input>
+      <div style={{width:'50px',height:'50px',backgroundColor:'white'}}></div>
+      </div>
       {suggestions.length > 0 && (
   <div className="searched-list">
     {suggestions.map((place) => (
