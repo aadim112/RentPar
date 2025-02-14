@@ -60,7 +60,7 @@ header{
   font-weight: bolder;
 }
 .menu-bar{
-  width: 400px;
+  width: 600px;
   height: auto;
   display: flex;
   align-items: center;
@@ -299,4 +299,88 @@ header{
   width: auto;
   height: auto;
   margin-top: 20px;
+}
+.account-contianer{
+  width: 90%;
+  height: auto;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.login label{
+  margin-top: 10px;
+  margin-left: 20px;
+  font-family: poppins;
+  font-size: 15px;
+}
+.login input{
+  margin-left: 20px;
+  margin-top: 5px;
+  font-family: poppins;
+  height: 25px;
+  padding: 10px;
+  width: 350px;
+  border: 0px;
+  border-radius: 7px;
+}
+.login input:focus{
+  outline: none;
+}
+.login button{
+  margin-left: 20px;
+  width: 130px;
+  margin-top: 10px;
+  height: 35px;
+  border: 0px;
+  background-color: black;
+  color: white;
+  border-radius: 7px;
+  font-family: poppins;
+  cursor: pointer;
+}
+.signup{
+  width: 550px;
+  height: auto;
+  background-color: #ffd32c;
+  border-radius: 9px;
+  display: flex;
+  flex-direction: column;
+}
+.signup label{
+  margin-top: 10px;
+  margin-left: 20px;
+  font-family: poppins;
+  font-size: 15px;
+}
+.signup input{
+  margin-left: 20px;
+  margin-top: 5px;
+  font-family: poppins;
+  height: 25px;
+  padding: 10px;
+  width: 350px;
+  border: 0px;
+  border-radius: 7px;
+}
+.signup input:focus{
+  outline: none;
+}
+.signup button{
+  margin-left: 20px;
+  width: 130px;
+  margin-top: 10px;
+  height: 35px;
+  border: 0px;
+  background-color: black;
+  color: white;
+  border-radius: 7px;
+  font-family: poppins;
+  cursor: pointer;
+}
+.space-list{
+  width: 250px;
+  height: 250px;
+  background-color: black;
+  position: relative;  
 }

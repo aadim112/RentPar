@@ -1,29 +1,38 @@
-import { useState } from 'react';
+import { useState,useEffect  } from 'react';
 import '../App.css'
 import { db } from '../firebase';
 import MapComponent from './MapComponent';
-import { onValue,ref,getDatabase,setLocation } from 'firebase/database';
+import { onValue,ref,getDatabase,set } from 'firebase/database';
 import { v4 as uuidv4 } from "uuid"; // Generate unique IDs
 
 
 function AddSpace(){
 
-  const [setLocation,setSetLocation] = useState({lat:0,lng:0})
+  const [Lcn,setSetLocation] = useState({lat:0,lng:0})
   const [data,setData] = useState({})
   const [decoration, setDecoration] = useState({ display: "none",color:'red',fontWeight:'bold' });
   const [warning, setWaring] = useState({ display: "none" });
   const [spacedetails, setSpaceDetails] = useState({
     fullname: "",
-    age: "",
+    age: 0,
     parking: { lat: "", lng: "" },
     SpaceBelonging: "",
     ParkingType: [],
-    capacity: "5",
-    Price: "",
-    AccountNumber: "",
+    capacity: 1,
+    Price: 0,
+    AccountNumber: 0,
     IFSC: "",
     image: null, // Store uploaded image
+    allocated : 0
   });
+
+    // Sync Lcn with spacedetails.parking when Lcn changes
+    useEffect(() => {
+      setSpaceDetails((prev) => ({
+        ...prev,
+        parking: { lat: Lcn.lat, lng: Lcn.lng },
+      }));
+    }, [Lcn]);
 
   const Validite = () => {
     const IfscInput = document.getElementById('ifsc-input');
@@ -43,13 +52,28 @@ function AddSpace(){
   
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    if(type == 'checkbox'){
+
+    if (type === "checkbox") {
       setSpaceDetails((prevDetail) => ({
         ...prevDetail,
-        ParkingType : checked ? [...prevDetail.ParkingType,name] :  prevDetail.ParkingType.filter((item) => item !== name),
+        ParkingType: checked
+          ? [...prevDetail.ParkingType, name]
+          : prevDetail.ParkingType.filter((item) => item !== name),
       }));
-    }else{
-      setSpaceDetails((prevDetail) => ({...prevDetail,[name] : value,}));
+    } else if (name === "parking") {
+      console.log("parking changed");
+      const [lat, lng] = value.split(",").map((coord) => parseFloat(coord.trim())); // Convert string to numbers
+      if (!isNaN(lat) && !isNaN(lng)) {
+        setSpaceDetails((prevDetail) => ({
+          ...prevDetail,
+          parking: { lat, lng },
+        }));
+      }
+    } else {
+      setSpaceDetails((prevDetail) => ({
+        ...prevDetail,
+        [name]: value,
+      }));
     }
   };
 
@@ -64,7 +88,6 @@ function AddSpace(){
     }
   };
 
-  console.log(setLocation)
  // Submit form and save data to Firebase Realtime Database
  const UploadSpace = (event) => {
   event.preventDefault();
@@ -78,7 +101,7 @@ function AddSpace(){
     image: imageName, // Save image name only
   };
 
-  setLocation(ref(db, `parkingSpaces/${spaceId}`), newSpaceDetails)
+  set(ref(db, `parkingSpaces/${spaceId}`), newSpaceDetails)
     .then(() => alert("Parking space added successfully!"))
     .catch((error) => console.error("Error saving data:", error));
 
@@ -87,6 +110,16 @@ function AddSpace(){
 
   return (
     <>
+      <header>
+        <p className='logo'>RentPar</p>
+        <div className='menu-bar'>
+          <a href='/'>Home</a>
+          <a href=''>About</a>
+          <a href=''>Contact</a>
+          <a href='/addSpace'>Add Space</a>
+          <a href='/account'>Login/Signup</a>
+        </div>
+      </header>
     <div className='add-space-container'>
         <div style={{width:'100%',height:'20px'}}></div>
         <p style={{marginLeft:'30px',fontFamily:'poppins',fontSize:'25px',fontWeight:'bolder'}}>Add Your Parking Space</p>
@@ -94,9 +127,9 @@ function AddSpace(){
             <label>Full Name</label>
             <input type='text' placeholder='Full Name*' name='fullname' onChange={handleChange}></input>
             <label>Age*</label>
-            <input type='text' placeholder='Age*' name='age' onChange={handleChange}></input>
+            <input type='number' placeholder='Age*' name='age' onChange={handleChange}></input>
              <label>Add parking Location(stay near the parking location to ge the location)</label>
-            <input type='text' placeholder='Parking Location' name='parking' value={setLocation.lat +',' + setLocation.lng}></input>
+            <input type='text' placeholder='Parking Location' name='parking' value={`${spacedetails.parking.lat}, ${spacedetails.parking.lng}`}></input>
             <div className='park-space-search'>
               <MapComponent onSetLocation={setSetLocation} />
             </div>
@@ -128,15 +161,15 @@ function AddSpace(){
               <label className="btn btn-primary" htmlFor="btn-check-hv">Heavy Vehicle</label>
               </div>
             </span>
-              <label style={{marginTop:'30px'}}>Capacity OF Parking Space |  Default. 5</label>
-              <input type='text' placeholder='Capacity of Space' name='capacity' value={spacedetails.capacity} readOnly required></input>
+              <label style={{marginTop:'30px'}}>Capacity OF Parking Space</label>
+              <input type='number' placeholder='Capacity of Space' name='capacity' onChange={handleChange} required></input>
 
               <label>Rent Per Slot</label>
-              <input type='text' placeholder='Rent Per Slot' name='Price' onChange={handleChange} required></input>
+              <input type='number' placeholder='Rent Per Slot' name='Price' onChange={handleChange} required></input>
 
               <label>Add Your Banking Details</label>
               <span>
-                <input type='text' placeholder='Accound Number' name='AccountNumber' onChange={handleChange}></input>
+                <input type='number' placeholder='Accound Number' name='AccountNumber' onChange={handleChange}></input>
                 <input type='text' placeholder='IFSC Code' id='ifsc-input' style={{marginLeft:'10px'}} name='IFSC' onChange={handleChange}></input>
                 <input type='button' value={'Check'} style={{marginLeft:'10px',width:'100px'}} onClick={Validite}></input>
               </span>

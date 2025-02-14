@@ -1,58 +1,69 @@
-import React, { useEffect, useRef,useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
-import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "mapbox-gl/dist/mapbox-gl.css";
-import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css"; // Import Geocoder CSS
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css"; 
 
 const MapComponent = ({ onSetLocation }) => {
   const [query, setQuery] = useState("");
-
-  //Getting users live location:
-  const [location, setLocation] = useState({ lat: 0, lng: 0 });
-  const [suggestions, setSuggestions] = useState([]); // Store place suggestions
+  const [location, setLocation] = useState({ lat: 23.0225, lng: 72.5714 }); // Default to Ahmedabad
+  const [suggestions, setSuggestions] = useState([]);
   const mapContainerRef = useRef(null);
-  const [marker, setMarker] = useState(null);
   const mapRef = useRef(null);
+  const markerRef = useRef(null); // Reference for the marker
 
   useEffect(() => {
-    if(onSetLocation){
+    if (onSetLocation) {
       onSetLocation(location);
     }
-  },[location])
+  }, [location]);
 
   useEffect(() => {
-    if (!mapContainerRef.current) return; // Ensure ref is available
+    if (!mapContainerRef.current) return;
 
-    mapboxgl.accessToken = "pk.eyJ1IjoiYWFkaXR5YTE0OSIsImEiOiJjbTV3Mmt5azUwNHNsMm9zNGdtbHd2NjR4In0.HC2t664_Z1Uw6ANn1oUD8A"; // Replace with your API key
+    mapboxgl.accessToken = "pk.eyJ1IjoiYWFkaXR5YTE0OSIsImEiOiJjbTV3Mmt5azUwNHNsMm9zNGdtbHd2NjR4In0.HC2t664_Z1Uw6ANn1oUD8A";
 
-    // Initialize map
+    // Initialize the map
     const map = new mapboxgl.Map({
-      container: mapContainerRef.current, // Ensure it's not null
+      container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/streets-v12",
-      marker : true,
-      center: [location.lat, location.lng],
+      center: [location.lng, location.lat], // Longitude, Latitude order
       zoom: 14,
     });
 
     // Store map reference
     mapRef.current = map;
 
-    // Cleanup on component unmount
-    return () => {
-      map.remove();
-    };
-  }, [location,marker]);
+    // Add Marker
+    markerRef.current = new mapboxgl.Marker()
+      .setLngLat([location.lng, location.lat])
+      .addTo(map);
+
+    // Click event to get coordinates
+    map.on("click", (e) => {
+      const { lng, lat } = e.lngLat;
+      setLocation({ lat, lng });
+
+      // Move existing marker
+      if (markerRef.current) {
+        markerRef.current.setLngLat([lng, lat]);
+      }
+    });
+
+    // Cleanup function
+    return () => map.remove();
+  }, [location]);
 
   const handleSearch = async (input) => {
-    if (!input.trim()) return; // Prevent empty searches
+    if (!input.trim()) return;
 
     try {
       const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(input)}.json?access_token=pk.eyJ1IjoiYWFkaXR5YTE0OSIsImEiOiJjbTV3Mmt5azUwNHNsMm9zNGdtbHd2NjR4In0.HC2t664_Z1Uw6ANn1oUD8A`);
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(input)}.json?access_token=pk.eyJ1IjoiYWFkaXR5YTE0OSIsImEiOiJjbTV3Mmt5azUwNHNsMm9zNGdtbHd2NjR4In0.HC2t664_Z1Uw6ANn1oUD8A`
+      );
       const data = await response.json();
 
       if (data.features.length > 0) {
-        setSuggestions(data.features); // Store all suggestions
+        setSuggestions(data.features);
       } else {
         setSuggestions([]);
       }
@@ -67,41 +78,70 @@ const MapComponent = ({ onSetLocation }) => {
     setQuery(inputValue);
 
     if (inputValue.length > 2) {
-      handleSearch(inputValue); // Fetch places as user types (after 2+ chars)
+      handleSearch(inputValue);
     } else {
-      setSuggestions([]); // Clear suggestions if input is too short
+      setSuggestions([]);
     }
   };
 
   const handleSelect = (place) => {
-    setQuery(place.place_name); // Set the selected place in the input
-    setLocation({lat:place.center[0],lng:place.center[1]});
-    //console.log(location);
-    setSuggestions([]); // Clear suggestions
+    setQuery(place.place_name);
+    setLocation({ lat: place.center[1], lng: place.center[0] }); // Reverse center order
+    setSuggestions([]);
+
+    if (markerRef.current) {
+      markerRef.current.setLngLat(place.center);
+    }
+  };
+
+  const handleGetCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setLocation({ lat: latitude, lng: longitude });
+
+          // Move marker to new location
+          if (markerRef.current) {
+            markerRef.current.setLngLat([longitude, latitude]);
+          }
+
+          // Move map center
+          if (mapRef.current) {
+            mapRef.current.flyTo({ center: [longitude, latitude], zoom: 14 });
+          }
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          alert("Unable to retrieve your location.");
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser.");
+    }
   };
 
   return (
-    <div className='map-container'>
-    <form className='search-state'>
-      <div style={{width:'1000px',display:'flex',alignItems:'center',}}>
-      <input type="text" placeholder="Destination" onChange={handleInputChange} value={query}></input>
-      <div style={{width:'50px',height:'50px',backgroundColor:'white'}}></div>
-      </div>
-      {suggestions.length > 0 && (
-  <div className="searched-list">
-    {suggestions.map((place) => (
-      <div className="suggestion-place" key={place.id} onClick={() => handleSelect(place)}>
-        <p style={{ fontWeight: "bold", fontSize: "15px" }}>{place.place_name}</p>
-        {/* <p style={{ fontSize: "12px" }}>sdhfkshklfhsdklfhsdkfh</p> */}
-      </div>
-    ))}
-  </div>
-)}
-    </form>
-    <div
-      ref={mapContainerRef}
-      style={{ width: "100%", height: "290px",borderRadius:'9px',marginTop:'10px' }} // Ensure it has a height
-    />
+    <div className="map-container">
+      <form className="search-state">
+        <div style={{width:'auto',display:'flex',alignItems:'center'}}>
+          <input type="text" placeholder="Search Location" onChange={handleInputChange} value={query} />
+          <div style={{marginLeft:'15px',width:'40px',height:'40px',backgroundColor:'white',borderRadius:'7px',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}} onClick={handleGetCurrentLocation}
+          >
+          <i class="fa-solid fa-crosshairs fa-lg" style={{color: "grey"}}></i>
+        </div>
+        </div>
+        {suggestions.length > 0 && (
+          <div className="searched-list">
+            {suggestions.map((place) => (
+              <div className="suggestion-place" key={place.id} onClick={() => handleSelect(place)}>
+                <p style={{ fontWeight: "bold", fontSize: "15px" }}>{place.place_name}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </form>
+      <div ref={mapContainerRef} style={{ width: "100%", height: "290px", borderRadius: "9px", marginTop: "10px" }} />
     </div>
   );
 };

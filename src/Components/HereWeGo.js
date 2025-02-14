@@ -89,13 +89,14 @@ const HereMapComponent = () => {
   };
 
   return (
+    <>
     <div className="map-container">
       <form className="search-state">
         <input type="text" placeholder="Search a Destination..." onChange={handleInputChange} value={query}/>
         {suggestions.length > 0 && (
           <div className="searched-list">
             {suggestions.map((place) => (
-              <div className="suggestion-place"  key={place.id} onClick={() => handleSelect(place)}>
+              <div className="suggestion-place"  key={place.id}  onClick={() => handleSelect(place)}>
                 <p style={{ fontWeight: "bold", fontSize: "15px" }}>{place.title}</p>
               </div>
             ))}
@@ -104,6 +105,8 @@ const HereMapComponent = () => {
       </form>
       <div ref={mapContainerRef} style={{width: "100%", height: "300px",borderRadius: "7px",marginTop: "10px",}}/>
     </div>
+    {/* <div className="space-list"></div> */}
+    </>
   );
 };
 
