@@ -1,14 +1,32 @@
 import React, { useEffect, useRef, useState } from "react";
+import { onValue,ref,getDatabase,set } from 'firebase/database';
+import { db} from '../firebase';
+import { get } from "firebase/database";
+import { sendPasswordResetEmail } from "firebase/auth";
 
 const HERE_API_KEY = "Wg3pz1QB8K94uq0TJtlVr2nFXSDRu8-rYR9JALszcR8"; // Replace with your HERE API Key
 
 const HereMapComponent = () => {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [selectedCoordinate,setSelectedCordinates] = useState({lat:null,lng:null});
+  const [filteredLocations,setFilteredLocations] = useState([]);
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const markerRef = useRef(null);
   
+  useEffect(() => {
+    if (selectedCoordinate.lat !== null && selectedCoordinate.lng !== null) {
+      getNearbyLocations(selectedCoordinate.lat, selectedCoordinate.lng).then((nearbyLocations) => {
+        console.log("Nearby Locations:", nearbyLocations); // Check the output in the browser console
+      });
+    }
+  }, [selectedCoordinate]);
+
+  useEffect(() => {
+    console.log("Updated Coordinates:", selectedCoordinate);
+  }, [selectedCoordinate]);
+
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
@@ -69,24 +87,81 @@ const HereMapComponent = () => {
     }
   };
 
-  const handleSelect = (place) => {
-    setQuery(place.title);
-    setSuggestions([]);
+  const handleSelect = async (place) => {
+  setQuery(place.title);
+  setSuggestions([]);
+  const { lat, lng } = place.position;
+  setSelectedCordinates({ lat, lng });
 
-    const { lat, lng } = place.position;
+  console.log("Selected Coordinates:", lat, lng); // Ensure correct values
 
-    if (mapRef.current) {
-      mapRef.current.setCenter({ lat, lng });
-      mapRef.current.setZoom(14);
+  if (mapRef.current) {
+    mapRef.current.setCenter({ lat, lng });
+    mapRef.current.setZoom(16);
 
-      if (markerRef.current) {
-        mapRef.current.removeObject(markerRef.current);
+    if (markerRef.current) {
+      mapRef.current.removeObject(markerRef.current);
+    }
+    const marker = new window.H.map.Marker({ lat, lng });
+    mapRef.current.addObject(marker);
+    markerRef.current = marker;
+  }
+
+  // Fetch nearby locations immediately after setting coordinates
+  const nearbyLocations = await getNearbyLocations(selectedCoordinate.lat, selectedCoordinate.lng);
+  setFilteredLocations(nearbyLocations);
+  console.log("Nearby Locations:", nearbyLocations);
+};
+
+
+  const getDistance = (lat1, lng1, lat2,lng2) => {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLng = (lng2 - lng1) * (Math.PI / 180);
+    const a = Math.sin(dLat /2 ) * Math.sin(dLat / 2) + Math.cos(lat1 * (Math.PI) / 180) * Math.cos(lat2 * (Math.PI / 180)) *Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
+
+  const getNearbyLocations = async (selectedLat, selectedLng, radius = 1) => {
+    if (!selectedLat || !selectedLng) return []; // Ensure valid coordinates
+  
+    const dbRef = ref(db, "parkingSpaces"); // Ensure correct reference
+  
+    try {
+      const snapshot = await get(dbRef);
+      if (snapshot.exists()) {
+        const locations = snapshot.val();
+        const nearbyLocations = Object.keys(locations)
+          .map((key) => ({
+            id: key,
+            ...locations[key], // Spread to include all properties
+          }))
+          .filter((location) => {
+            if (location.parking?.lat && location.parking?.lng) {
+              const distance = getDistance(
+                selectedLat,
+                selectedLng,
+                parseFloat(location.parking.lat),
+                parseFloat(location.parking.lng)
+              );
+              return distance <= radius; // Filter within the radius
+            }
+            return false;
+          });
+  
+        return nearbyLocations; // Return complete object of each found space
+      } else {
+        console.log("No parking spaces found.");
+        return [];
       }
-      const marker = new window.H.map.Marker({ lat, lng });
-      mapRef.current.addObject(marker);
-      markerRef.current = marker;
+    } catch (error) {
+      console.error("Error fetching parking spaces:", error);
+      return [];
     }
   };
+  
 
   return (
     <>

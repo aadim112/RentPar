@@ -110,17 +110,7 @@ function AddSpace(){
 
   return (
     <>
-      <header>
-        <p className='logo'>RentPar</p>
-        <div className='menu-bar'>
-          <a href='/'>Home</a>
-          <a href=''>About</a>
-          <a href=''>Contact</a>
-          <a href='/addSpace'>Add Space</a>
-          <a href='/account'>Login/Signup</a>
-        </div>
-      </header>
-    <div className='add-space-container'>
+      <div className='add-space-container'>
         <div style={{width:'100%',height:'20px'}}></div>
         <p style={{marginLeft:'30px',fontFamily:'poppins',fontSize:'25px',fontWeight:'bolder'}}>Add Your Parking Space</p>
         <form className='add-space-form'>
@@ -180,7 +170,7 @@ function AddSpace(){
               <label><input type='checkbox' checked></input>I agree to the policies offer by the website</label>
               <button type='submit' onClick={UploadSpace}  className='upload'>Register Place</button>
         </form>
-    </div>
+      </div>
     </>
   )
 }

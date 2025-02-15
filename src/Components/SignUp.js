@@ -1,4 +1,4 @@
-import {  useState } from 'react'
+import {  useState ,useEffect} from 'react'
 import '../App.css'
 import {auth} from '../firebase'
 import { db } from '../firebase';
@@ -6,16 +6,28 @@ import { ref,getDatabase,set } from 'firebase/database';
 import { signInWithEmailAndPassword,updateProfile } from 'firebase/auth';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 
-const SignUp =()=>{
+const SignUp = ({ onSetUser }) =>{
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [name,setName] = useState("");
     const [action,setAction] = useState('Login');
 
+    const [sessionUser, setSessionUser] = useState(() => {
+        const storedUser = sessionStorage.getItem("user");
+        return storedUser ? JSON.parse(storedUser) : null;
+    });
+
+
+      useEffect(() => {
+        if (onSetUser) {
+          onSetUser(sessionUser);
+        }
+      }, [sessionUser]);
+
     function manageAccount(value){
         setAction(value);
-        console.log(action)
+        console.log(action);
     }
 
     const handleLogin = async (e) => {
@@ -26,14 +38,24 @@ const SignUp =()=>{
           const user = userCredendail.user;
           await updateProfile(user, { displayName: name });
 
-          //storing the sessional data
-          sessionStorage.setItem("user", JSON.stringify({
-            uid : user.uid,
-            name : user.displayName,
+        
+        //Storing the sessional data
+        const userData = {
+            uid: user.uid,
+            name: user.displayName || "Unknown", // Handle missing name
             email: user.email
-          }));
-          alert("Login Successful!");
+        };
+        setSessionUser(userData);
+        sessionStorage.setItem("user", JSON.stringify(userData));
 
+        //   //storing the sessional data
+        //   sessionStorage.setItem("user", JSON.stringify({
+        //     uid : user.uid,
+        //     name : user.displayName,
+        //     email: user.email
+        //   }));
+        alert("Login Successful!");
+        
         } catch (err) {
           setError('Invalid Credentials');
         }
@@ -43,18 +65,15 @@ const SignUp =()=>{
         try {
           const userCredendail = await createUserWithEmailAndPassword(auth, email, password);
           const user = userCredendail.user;
-          const userDetail = {
-            name : name,
-            email : email,
-            createdAt: new Date().toISOString(),
-          }
 
-          set(ref(db, "users/" + user.uid), {
+        //Storing the sessional data
+        const userData = {
             uid: user.uid,
-            name: name,
-            email: email,
-            createdAt: new Date().toISOString(),
-        });
+            name: user.displayName || "Unknown", // Handle missing name
+            email: user.email
+        };
+        setSessionUser(userData);
+        sessionStorage.setItem("user", JSON.stringify(userData));
         
         //storing the sessional data
           sessionStorage.setItem("user", JSON.stringify({
