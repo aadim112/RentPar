@@ -5,7 +5,7 @@ import { get } from "firebase/database";
 
 const HERE_API_KEY = "Wg3pz1QB8K94uq0TJtlVr2nFXSDRu8-rYR9JALszcR8";
 
-const HereMapComponent = ({onNearbyLocation}) => {
+const HereMapComponent = ({onNearbyLocation,markerLocation }) => {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedCoordinate,setSelectedCordinates] = useState({lat:null,lng:null});
@@ -14,6 +14,18 @@ const HereMapComponent = ({onNearbyLocation}) => {
   const mapRef = useRef(null);
   const markerRef = useRef(null);
   const markersRef = useRef([]); // 🔹 Store multiple markers
+
+  // Custom marker icons
+  const redIcon = new window.H.map.Icon(
+    "https://maps.gstatic.com/mapfiles/ms2/micons/red-dot.png"
+  );
+  const greenIcon = new window.H.map.Icon(
+    "https://maps.gstatic.com/mapfiles/ms2/micons/green-dot.png"
+  );
+
+  useEffect(()=>{
+    console.log("props",markerLocation)
+  },[markerLocation])
 
   useEffect(() => {
     if (selectedCoordinate.lat !== null && selectedCoordinate.lng !== null) {
@@ -121,24 +133,48 @@ const HereMapComponent = ({onNearbyLocation}) => {
 
   useEffect(() => {
     if (!mapRef.current) return;
-
+  
     // 🔹 Remove previous markers before adding new ones
-    markersRef.current.forEach((marker) => mapRef.current.removeObject(marker));
-    markersRef.current = [];
-
-    // 🔹 Add new markers for each nearby location
-    filteredLocations.forEach((location) => {
-      if (location.parking?.lat && location.parking?.lng) {
-        const marker = new window.H.map.Marker({
-          lat: parseFloat(location.parking.lat),
-          lng: parseFloat(location.parking.lng),
-        });
-        mapRef.current.addObject(marker);
-        markersRef.current.push(marker);
-      }
-    });
-
-  }, [filteredLocations]); // 🔹 Runs whenever filtered locations update
+    if (markerRef.current) {
+      mapRef.current.removeObject(markerRef.current);
+    }
+    if (markerRef.parkingMarker) {
+      mapRef.current.removeObject(markerRef.parkingMarker);
+    }
+  
+    // Add searched location marker (Red)
+    if (selectedCoordinate.lat && selectedCoordinate.lng) {
+      const redIcon = new window.H.map.Icon(
+        "https://maps.google.com/mapfiles/ms/icons/red-dot.png"
+      );
+  
+      const searchedMarker = new window.H.map.Marker(
+        { lat: selectedCoordinate.lat, lng: selectedCoordinate.lng },
+        { icon: redIcon }
+      );
+  
+      mapRef.current.addObject(searchedMarker);
+      markerRef.current = searchedMarker; // Store reference for removal
+    }
+  
+    // 🟢 Add selected parking location marker (Green)
+    if (markerLocation?.parking?.lat && markerLocation?.parking?.lng) {
+      const greenIcon = new window.H.map.Icon(
+        "https://maps.google.com/mapfiles/ms/icons/green-dot.png"
+      );
+  
+      const parkingMarker = new window.H.map.Marker(
+        { lat: parseFloat(markerLocation.parking.lat), lng: parseFloat(markerLocation.parking.lng) },
+        { icon: greenIcon }
+      );
+  
+      mapRef.current.addObject(parkingMarker);
+      markerRef.parkingMarker = parkingMarker;
+    }
+  
+  }, [selectedCoordinate, markerLocation]);
+  
+  
 
 
   

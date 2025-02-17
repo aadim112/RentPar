@@ -85,7 +85,7 @@ const SignUp = ({ onSetUser }) =>{
           }));
           alert("Account Created Successfully!");
           navigate('/');
-          action('Logout');
+          setAction('Logout');
         } catch (err) {
           setError('Invalid Credentials');
         }

@@ -80,6 +80,16 @@ header{
   justify-content: space-between;
   background-color: #ffd32c;
 }
+.login-button{
+  width: auto;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-radius: 9px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background-color: white;
+  color: black;
+}
 .hero-information{
   width: 50%;
   height: 100%;
@@ -112,7 +122,11 @@ header{
   height: 50px;
   display: flex;
   align-items: center;
-  justify-content: space-between; 
+  justify-content: space-between;
+  cursor: pointer; 
+}
+.location-container:hover{
+  background-color: rgb(85, 85, 85);
 }
 .parking-name{
   margin-left: 10px;

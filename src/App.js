@@ -10,7 +10,7 @@ import Home from './Components/Home';
 function App() {
   const [sessionUser, setSessionUser] = useState({ uid: null });
   const [actionState, setActionState] = useState(false);
-  const [status,seStatus] = useState('Login/Singup')
+  const [status,seStatus] = useState('Login')
 
   useEffect(() => {
     const storedUser = JSON.parse(sessionStorage.getItem("user"));
@@ -34,7 +34,6 @@ function App() {
     }
   };
 
-  console.log(sessionUser)
 
   return (
     <div style={{ width: '100%' }}>
@@ -45,7 +44,7 @@ function App() {
           <a href=''>About</a>
           <a href=''>Contact</a>
           <a href='/addSpace'>Add Space</a>
-          <a href='/account' onClick={(e) => { if (actionState) {e.preventDefault(); handleLogout(e);}}}><p>{status}</p></a>
+          <a href='/account' onClick={(e) => { if (actionState) {e.preventDefault(); handleLogout(e);}}}><p className='login-button'>{status}</p></a>
         </div>
       </header>
       <Router>
