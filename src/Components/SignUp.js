@@ -1,5 +1,6 @@
 import {  useState ,useEffect} from 'react'
 import '../App.css'
+import { useNavigate } from 'react-router-dom';
 import {auth} from '../firebase'
 import { db } from '../firebase';
 import { ref,getDatabase,set } from 'firebase/database';
@@ -18,6 +19,7 @@ const SignUp = ({ onSetUser }) =>{
         return storedUser ? JSON.parse(storedUser) : null;
     });
 
+    const navigate = useNavigate();
 
       useEffect(() => {
         if (onSetUser) {
@@ -54,8 +56,8 @@ const SignUp = ({ onSetUser }) =>{
         //     name : user.displayName,
         //     email: user.email
         //   }));
-        alert("Login Successful!");
-        
+        //alert("Login Successful!");
+        navigate('/');
         } catch (err) {
           setError('Invalid Credentials');
         }
@@ -81,8 +83,9 @@ const SignUp = ({ onSetUser }) =>{
             name : user.displayName,
             email: user.email
           }));
-        
           alert("Account Created Successfully!");
+          navigate('/');
+          action('Logout');
         } catch (err) {
           setError('Invalid Credentials');
         }

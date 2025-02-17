@@ -52,7 +52,7 @@ function App() {
         <Routes>
           <Route path="/addSpace" element={actionState ? <AddSpace /> : <SignUp onSetUser={setSessionUser} />} />
           <Route path="/account" element={<SignUp onSetUser={setSessionUser} />} />
-          <Route path="/" element={<Home name={'Guest'} />} />
+          <Route path="/" element={<Home name={sessionUser && sessionUser.email} />} />
         </Routes>
       </Router>
     </div>

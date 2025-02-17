@@ -2,11 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { onValue,ref,getDatabase,set } from 'firebase/database';
 import { db} from '../firebase';
 import { get } from "firebase/database";
-import { sendPasswordResetEmail } from "firebase/auth";
 
-const HERE_API_KEY = "Wg3pz1QB8K94uq0TJtlVr2nFXSDRu8-rYR9JALszcR8"; // Replace with your HERE API Key
+const HERE_API_KEY = "Wg3pz1QB8K94uq0TJtlVr2nFXSDRu8-rYR9JALszcR8";
 
-const HereMapComponent = () => {
+const HereMapComponent = ({onNearbyLocation}) => {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedCoordinate,setSelectedCordinates] = useState({lat:null,lng:null});
@@ -14,7 +13,8 @@ const HereMapComponent = () => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const markerRef = useRef(null);
-  
+  const markersRef = useRef([]); // 🔹 Store multiple markers
+
   useEffect(() => {
     if (selectedCoordinate.lat !== null && selectedCoordinate.lng !== null) {
       getNearbyLocations(selectedCoordinate.lat, selectedCoordinate.lng).then((nearbyLocations) => {
@@ -88,30 +88,60 @@ const HereMapComponent = () => {
   };
 
   const handleSelect = async (place) => {
-  setQuery(place.title);
-  setSuggestions([]);
-  const { lat, lng } = place.position;
-  setSelectedCordinates({ lat, lng });
-
-  console.log("Selected Coordinates:", lat, lng); // Ensure correct values
-
-  if (mapRef.current) {
-    mapRef.current.setCenter({ lat, lng });
-    mapRef.current.setZoom(16);
-
-    if (markerRef.current) {
-      mapRef.current.removeObject(markerRef.current);
+    setQuery(place.title);
+    setSuggestions([]);
+    const { lat, lng } = place.position;
+    setSelectedCordinates({ lat, lng });
+  
+    console.log("Selected Coordinates:", lat, lng);
+  
+    if (mapRef.current) {
+      mapRef.current.setCenter({ lat, lng });
+      mapRef.current.setZoom(16);
+  
+      if (markerRef.current) {
+        mapRef.current.removeObject(markerRef.current);
+      }
+      const marker = new window.H.map.Marker({ lat, lng });
+      mapRef.current.addObject(marker);
+      markerRef.current = marker;
     }
-    const marker = new window.H.map.Marker({ lat, lng });
-    mapRef.current.addObject(marker);
-    markerRef.current = marker;
-  }
+  
+    // Fetch nearby locations and wait for the result
+    const nearbyLocations = await getNearbyLocations(lat, lng);
+    
+    setFilteredLocations(nearbyLocations); // Update state
+  
+    console.log("Nearby Locations:", nearbyLocations);
+  
+    if (onNearbyLocation) {
+      onNearbyLocation(nearbyLocations); // Pass the actual fetched data
+    }
+  };
 
-  // Fetch nearby locations immediately after setting coordinates
-  const nearbyLocations = await getNearbyLocations(selectedCoordinate.lat, selectedCoordinate.lng);
-  setFilteredLocations(nearbyLocations);
-  console.log("Nearby Locations:", nearbyLocations);
-};
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    // 🔹 Remove previous markers before adding new ones
+    markersRef.current.forEach((marker) => mapRef.current.removeObject(marker));
+    markersRef.current = [];
+
+    // 🔹 Add new markers for each nearby location
+    filteredLocations.forEach((location) => {
+      if (location.parking?.lat && location.parking?.lng) {
+        const marker = new window.H.map.Marker({
+          lat: parseFloat(location.parking.lat),
+          lng: parseFloat(location.parking.lng),
+        });
+        mapRef.current.addObject(marker);
+        markersRef.current.push(marker);
+      }
+    });
+
+  }, [filteredLocations]); // 🔹 Runs whenever filtered locations update
+
+
+  
 
 
   const getDistance = (lat1, lng1, lat2,lng2) => {
