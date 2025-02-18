@@ -94,6 +94,21 @@ header{
   width: 50%;
   height: 100%;
 }
+.user{
+  font-family: poppins;
+  margin-left: 10px;
+  font-weight: bold;
+  font-size: 25px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+.hero-text{
+  width: 500px;
+  margin-left: 30px;
+  font-size: 27px;
+  font-family: poppins;
+  font-weight: bold;
+}
 .hero-book{
   width: 50%;
   height: 90%;
@@ -527,4 +542,132 @@ footer{
   margin-top: 10px;
   color: white;
   font-family: poppins;
+}
+.help-span{
+  font-size: 30px;
+}
+.add-space-container input:nth-child(2){
+  margin: 20px;
+}
+.add-space-container input:nth-child(3){
+  margin: 10px;
+  width: 100px;
+}
+
+
+
+@media(max-width:1160px){
+  header{
+    width: 100%;
+    height: auto;
+    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo{
+    margin-left: 0px;
+    margin-bottom: 0px;
+  }
+  .menu-bar a{
+    margin: 0px;
+  }
+  .hero-section{
+    width: 98%;
+    height: auto;
+    display: block;
+    padding: 10px;
+  }
+  .hero-book{
+    width: 550px;
+    margin-top: 10px;
+    margin-left: 30px;
+  }
+  .map-container{
+    width: 100%;
+  }
+  .public-banner{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .help-span{
+    font-size: 25px;
+    text-align: center;
+  }
+  .public-help-button{
+    margin-top: 20px;
+  }
+  .add-space-form input{
+    width: 80%;
+  }
+  .custom-file-label{
+    width: 80%;
+  }
+  .bank-detail-input{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .add-space-container{
+    height: auto;
+  }
+  .add-space-container input:nth-child(2){
+    margin: 0px;
+  }
+  .add-space-container input:nth-child(3){
+    margin: 0px;
+  }
+}
+@media(max-width:600px){
+  .menu-bar{
+    width: 100%;
+    display: flex;
+    justify-content: start;
+    flex-direction: column;
+    height: auto;
+  }
+  .user{
+    font-size: 10px;
+  }
+  .hero-information{
+    width: 100%;
+  }
+  .hero-text{
+    width: 300px;
+    font-size: 15px;
+  }
+  .nearby-location{
+    width: 100%;
+    margin-left: 0px;
+  }
+  .hero-book{
+    width: 100%;
+    margin-left: 0px;
+  }
+  .mid-strip img{
+    width: 50px;
+    height: 50px;
+  }
+  .mid-strip p{
+    font-size: 12px;
+  }
+  .add-public-space{
+    height: auto;
+    padding-bottom: 10px;
+    padding-top: 20px;
+  }
+  .parking-name p{
+    font-size: 12px;
+  }
+  .parking-type{
+    width: 50px;
+    display: none;
+  }
+  .location-container p{
+    font-size: 12px;
+    width: auto;
+  }
 }

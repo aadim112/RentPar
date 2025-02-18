@@ -126,8 +126,7 @@ const MapComponent = ({ onSetLocation }) => {
       <form className="search-state">
         <div style={{width:'auto',display:'flex',alignItems:'center'}}>
           <input type="text" placeholder="Search Location" onChange={handleInputChange} value={query} />
-          <div style={{marginLeft:'15px',width:'40px',height:'40px',backgroundColor:'white',borderRadius:'7px',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}} onClick={handleGetCurrentLocation}
-          >
+          <div style={{marginLeft:'15px',width:'40px',height:'40px',backgroundColor:'white',borderRadius:'7px',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer'}} onClick={handleGetCurrentLocation}>
           <i class="fa-solid fa-crosshairs fa-lg" style={{color: "grey"}}></i>
         </div>
         </div>

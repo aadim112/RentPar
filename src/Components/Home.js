@@ -21,10 +21,10 @@ const Home = (props) => {
     }
     return(
     <>
-        <p style={{fontFamily:'poppins',marginLeft:'10px',fontWeight:'bold',fontSize:'25px',marginBottom:'10px',marginTop:'10px'}}> Welcome! {props.name}</p>
+        <p className='user'> Welcome! {props.name}</p>
         <div className='hero-section'>
                 <div className='hero-information'>
-                    <p style={{width:'500px',marginLeft:'30px',fontSize:'27px',fontFamily:'poppins',fontWeight:'bold'}}>Rent your unused parking space and help reduce traffic.</p>
+                    <p className="hero-text">Rent your unused parking space and help reduce traffic.</p>
                     <div>
                         <div className='nearby-location'>
                             {nearbyLocations.length > 0 ?(nearbyLocations.map((location,index)=> (
@@ -43,13 +43,13 @@ const Home = (props) => {
                 </div>
             </div>
         <div className='hero-book'>
-            <HereWeGo onNearbyLocation={setNearbyLocations} markerLocation={selectMarker} />
+            <HereWeGo onNearbyLocation={setNearbyLocations}  markerLocation={selectMarker} />
         </div>
         </div>
         <div className='public-banner'>
-            <div>
-            <span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'0px',fontSize:'30px'}}>Help</span><span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'5px',fontSize:'30px',color:'#ffd32c'}}>Us</span><span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'5px',fontSize:'30px'}}>Get Better!</span>
-            <span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'10px',fontSize:'30px'}}>Help</span><span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'5px',fontSize:'30px',color:'#ffd32c'}}>Yourself</span><span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'5px',fontSize:'30px'}}>Get Better</span><span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'5px',fontSize:'30px',color:'#1A7499'}}> Space!</span>
+            <div className='help-span'>
+            <span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'0px'}}>Help</span><span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'5px',color:'#ffd32c'}}>Us</span><span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'5px',}}>Get Better!</span>
+            <span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'10px'}}>Help</span><span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'5px',color:'#ffd32c'}}>Yourself</span><span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'5px',}}>Get Better</span><span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'5px',color:'#1A7499'}}> Space!</span>
             </div>
             <div className='public-help-button'><a href='/publicspace'>Add Space</a></div>
         </div>

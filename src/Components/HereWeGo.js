@@ -15,6 +15,9 @@ const HereMapComponent = ({onNearbyLocation,markerLocation }) => {
   const markerRef = useRef(null);
   const markersRef = useRef([]); // 🔹 Store multiple markers
 
+  //Loading the map scripts
+  
+
   // Custom marker icons
   const redIcon = new window.H.map.Icon(
     "https://maps.gstatic.com/mapfiles/ms2/micons/red-dot.png"
@@ -72,8 +75,7 @@ const HereMapComponent = ({onNearbyLocation,markerLocation }) => {
     if (!input.trim()) return;
 
     try {
-      const response = await fetch(`https://discover.search.hereapi.com/v1/discover?at=20.5937,78.9629&q=${encodeURIComponent(input)}&apiKey=${HERE_API_KEY}`
-);
+      const response = await fetch(`https://discover.search.hereapi.com/v1/discover?at=20.5937,78.9629&q=${encodeURIComponent(input)}&apiKey=${HERE_API_KEY}`);
       const data = await response.json();
 
       if (data.items.length > 0) {
@@ -174,11 +176,6 @@ const HereMapComponent = ({onNearbyLocation,markerLocation }) => {
   
   }, [selectedCoordinate, markerLocation]);
   
-  
-
-
-  
-
 
   const getDistance = (lat1, lng1, lat2,lng2) => {
     const R = 6371;
@@ -244,7 +241,7 @@ const HereMapComponent = ({onNearbyLocation,markerLocation }) => {
           </div>
         )}
       </form>
-      <div ref={mapContainerRef} style={{width: "100%", height: "300px",borderRadius: "7px",marginTop: "10px",}}/>
+      <div id="map" ref={mapContainerRef} style={{width: "100%", height: "300px",borderRadius: "7px",marginTop: "10px",}}/>
     </div>
     {/* <div className="space-list"></div> */}
     </>

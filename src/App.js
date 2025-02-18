@@ -9,6 +9,8 @@ import Home from './Components/Home';
 import PublicSpace from './Components/PublicSpace';
 
 function App() {
+
+  
   const [sessionUser, setSessionUser] = useState({ uid: null });
   const [actionState, setActionState] = useState(false);
   const [status,seStatus] = useState('Login')

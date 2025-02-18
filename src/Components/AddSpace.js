@@ -158,9 +158,9 @@ function AddSpace(){
               <input type='number' placeholder='Rent Per Slot' name='Price' onChange={handleChange} required></input>
 
               <label>Add Your Banking Details</label>
-              <span>
+              <span className='bank-detail-input'>
                 <input type='number' placeholder='Accound Number' name='AccountNumber' onChange={handleChange}></input>
-                <input type='text' placeholder='IFSC Code' id='ifsc-input' style={{marginLeft:'10px'}} name='IFSC' onChange={handleChange}></input>
+                <input type='text' placeholder='IFSC Code' id='ifsc-input' name='IFSC' onChange={handleChange}></input>
                 <input type='button' value={'Check'} style={{marginLeft:'10px',width:'100px'}} onClick={Validite}></input>
               </span>
               <span id='bank-details' style={decoration} className='bank-details'>
