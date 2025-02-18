@@ -3,10 +3,11 @@ import AddSpace from './Components/AddSpace';
 import MapComponent from './Components/MapComponent';
 import HereWeGo from './Components/HereWeGo';
 import SignUp from './Components/SignUp';
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import Home from './Components/Home';
 import PublicSpace from './Components/PublicSpace';
+import { HashRouter as Router, Route, Routes } from "react-router-dom";
+
 
 function App() {
 
