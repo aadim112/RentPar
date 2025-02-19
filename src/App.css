@@ -127,7 +127,10 @@ header{
   display: flex;
   flex-direction: column;
   max-height: 270px;
-  overflow-y: scroll;
+  overflow-y: hidden;
+}
+.nearby-location::-webkit-scrollbar{
+  display: none;
 }
 .location-container{
   width: 100%;
