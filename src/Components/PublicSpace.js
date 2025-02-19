@@ -52,8 +52,8 @@ function PublicSpace() {
                     
                     // Check if the coordinates match or are very close (threshold ~0.0001 for slight variations)
                     if (
-                        Math.abs(lat - publicSpace.parking.lat) <= 2.0001 &&
-                        Math.abs(lang - publicSpace.parking.lang) <= 2.0001
+                        Math.abs(lat - publicSpace.parking.lat) <= 0.0001 &&
+                        Math.abs(lang - publicSpace.parking.lang) <= 0.0001
                     ) {
                         existingEntryKey = childSnapshot.key; // Store the key of existing entry
                     }
