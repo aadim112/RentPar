@@ -125,9 +125,9 @@ function AddSpace(){
             </div>
             <span style={{marginTop:'20px'}}>
                 <label style={{fontWeight:'bolder'}}>Do you own this space?</label>
-                <span>
-                    <label style={{marginLeft:'10px',fontWeight:'400'}}><input type='radio' name='space' onChange={handleChange} required></input>No</label>
-                    <label style={{marginLeft:'10px',fontWeight:'400'}}><input type='radio' name='space' onChange={handleChange} required></input>Yes</label>
+                <span className='property-ownership'>
+                    <label><input type='radio' name='space' onChange={handleChange} required></input>No</label>
+                    <label><input type='radio' name='space' onChange={handleChange} required></input>Yes</label>
                 </span>
             </span>
             <label style={{marginTop:'20px',fontWeight:'bold'}}>Upload Image</label>
@@ -135,7 +135,7 @@ function AddSpace(){
             <input type="file" id="file-upload" className="file-input" onChange={handleImageUpload} />
             <label htmlFor="file-upload" className="custom-file-label" style={{marginTop:'10px'}}>Upload Parking Space Image</label>
 
-            <span style={{marginTop:'20px'}}>
+            <span className='parking-type-container'>
               <label style={{fontFamily:'poppins',fontWeight:'bold'}}>Type Of Parking</label>
               <div className='space-type'>
               <input type="checkbox" className="btn-check" id="btn-check-2w" autoComplete="off" name='Twowheels' onChange={handleChange} />
@@ -161,7 +161,7 @@ function AddSpace(){
               <span className='bank-detail-input'>
                 <input type='number' placeholder='Accound Number' name='AccountNumber' onChange={handleChange}></input>
                 <input type='text' placeholder='IFSC Code' id='ifsc-input' name='IFSC' onChange={handleChange}></input>
-                <input type='button' value={'Check'} style={{marginLeft:'10px',width:'100px'}} onClick={Validite}></input>
+                <input type='button' value={'Check'}onClick={Validite}></input>
               </span>
               <span id='bank-details' style={decoration} className='bank-details'>
                 <label>Bank Name: {data.BANK}</label>
