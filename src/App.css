@@ -127,10 +127,7 @@ header{
   display: flex;
   flex-direction: column;
   max-height: 270px;
-  overflow-y: hidden;
-}
-.nearby-location::-webkit-scrollbar{
-  display: none;
+  overflow-y: scroll;
 }
 .location-container{
   width: 100%;
@@ -569,8 +566,9 @@ footer{
 .add-space-container{
   padding-bottom: 20px;
 }
-
-
+.nearby-location::-webkit-scrollbar{
+  display: none;
+}
 
 @media(max-width:1160px){
   header{
@@ -664,6 +662,7 @@ footer{
   .nearby-location{
     width: 100%;
     margin-left: 0px;
+    overflow-y: auto;
   }
   .hero-book{
     width: 100%;
