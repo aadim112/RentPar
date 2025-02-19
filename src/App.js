@@ -50,14 +50,12 @@ function App() {
           <a href='/account' onClick={(e) => { if (actionState) {e.preventDefault(); handleLogout(e);}}}><p className='login-button'>{status}</p></a>
         </div>
       </header>
-      <Router>
         <Routes>
           <Route path="/addSpace" element={actionState ? <AddSpace /> : <SignUp onSetUser={setSessionUser} />} />
           <Route path="/account" element={<SignUp onSetUser={setSessionUser} />} />
           <Route path="/" element={<Home name={sessionUser && sessionUser.email} />} />
           <Route path='/publicspace' element={<PublicSpace/>}></Route>
         </Routes>
-      </Router>
       <footer>
         <p>The Website is held to copyright.</p>
       </footer>
