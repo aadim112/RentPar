@@ -3,7 +3,7 @@ import AddSpace from './Components/AddSpace';
 import MapComponent from './Components/MapComponent';
 import HereWeGo from './Components/HereWeGo';
 import SignUp from './Components/SignUp';
-import { HashRouter as Router, Route, Routes } from "react-router-dom";
+import { HashRouter as Router, Route, Routes,BrowserRouter } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import Home from './Components/Home';
 import PublicSpace from './Components/PublicSpace';
@@ -50,14 +50,14 @@ function App() {
           <a href='/account' onClick={(e) => { if (actionState) {e.preventDefault(); handleLogout(e);}}}><p className='login-button'>{status}</p></a>
         </div>
       </header>
-      <Router>
+      <BrowserRouter>
         <Routes>
           <Route path="/addSpace" element={actionState ? <AddSpace /> : <SignUp onSetUser={setSessionUser} />} />
           <Route path="/account" element={<SignUp onSetUser={setSessionUser} />} />
           <Route path="/" element={<Home name={sessionUser && sessionUser.email} />} />
           <Route path='/publicspace' element={<PublicSpace/>}></Route>
         </Routes>
-      </Router>
+      </BrowserRouter>
       <footer>
         <p>The Website is held to copyright.</p>
       </footer>
