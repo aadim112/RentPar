@@ -63,7 +63,7 @@ function PublicSpace() {
                     // If found, increment votes by 1
                     const existingRef = ref(db, `publicSpace/${existingEntryKey}`);
                     update(existingRef, { votes: snapshot.child(existingEntryKey).val().votes + 1 })
-                        .then(() => alert("Vote incremented for existing public space!"))
+                        .then(() => alert("Thanks for contribution. Go can go back"))
                         .catch((error) => console.error("Error updating votes: ", error));
                     return;
                 }
