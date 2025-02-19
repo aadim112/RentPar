@@ -52,8 +52,8 @@ function PublicSpace() {
                     
                     // Check if the coordinates match or are very close (threshold ~0.0001 for slight variations)
                     if (
-                        Math.abs(lat - publicSpace.parking.lat) <= 2.0001 &&
-                        Math.abs(lang - publicSpace.parking.lang) <= 2.0001
+                        Math.abs(lat - publicSpace.parking.lat) <= 0.0001 &&
+                        Math.abs(lang - publicSpace.parking.lang) <= 0.0001
                     ) {
                         existingEntryKey = childSnapshot.key; // Store the key of existing entry
                     }
@@ -63,7 +63,7 @@ function PublicSpace() {
                     // If found, increment votes by 1
                     const existingRef = ref(db, `publicSpace/${existingEntryKey}`);
                     update(existingRef, { votes: snapshot.child(existingEntryKey).val().votes + 1 })
-                        .then(() => alert("Vote incremented for existing public space!"))
+                        .then(() => alert("Thanks for contribution. Go can go back"))
                         .catch((error) => console.error("Error updating votes: ", error));
                     return;
                 }
