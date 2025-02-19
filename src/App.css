@@ -404,6 +404,22 @@ header{
   display: flex;
   flex-direction: column;
 }
+.login{
+  width: 550px;
+  height: auto;
+  background-color: #ffd32c;
+  border-radius: 9px;
+  display: flex;
+  flex-direction: column;
+}
+.signup{
+  width: 550px;
+  height: auto;
+  background-color: #ffd32c;
+  border-radius: 9px;
+  display: flex;
+  flex-direction: column;
+}
 .login label{
   margin-top: 10px;
   margin-left: 20px;
@@ -546,12 +562,12 @@ footer{
 .help-span{
   font-size: 30px;
 }
-.add-space-container input:nth-child(2){
-  margin: 20px;
-}
 .add-space-container input:nth-child(3){
   margin: 10px;
   width: 100px;
+}
+.add-space-container{
+  padding-bottom: 20px;
 }
 
 
@@ -620,6 +636,12 @@ footer{
   .add-space-container input:nth-child(3){
     margin: 0px;
   }
+  .add-space-form input[type ="checkbox"]{
+    width: auto;
+  }
+  .add-space-form input[type ="radio"]{
+    width: auto;
+  }
 }
 @media(max-width:600px){
   .menu-bar{
@@ -669,5 +691,33 @@ footer{
   .location-container p{
     font-size: 12px;
     width: auto;
+  }
+  .add-space-form{
+    width: 100%;
+    margin-left: 10px;
+  }
+  .map-container{
+    width: 90%;
+  }
+  .space-type{
+    height: auto;
+  }
+  .add-space-form input[type ="checkbox"]{
+    width: auto;
+  }
+  .add-space-form input[type ="radio"]{
+    width: auto;
+  }
+  .login{
+    width: 100%;
+  }
+  .login input{
+    width: 80%;
+  }
+  .signup{
+    width: 100%;
+  }
+  .signup input{
+    width: 80%;
   }
 }

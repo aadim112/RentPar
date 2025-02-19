@@ -105,7 +105,7 @@ const SignUp = ({ onSetUser }) =>{
         <div className='account-contianer'>
         {error && <p style={{ color: "red", fontFamily:'poppins',fontWeight:'bold',marginLeft:'20px'}}>{error}</p>}
             {action === 'Login' ? (
-                <form className='login' id='login' style={{width:'550px',height:'auto',backgroundColor:'#ffd32c',borderRadius:'9px',display:'flex',flexDirection:'column'}}>
+                <form className='login' id='login'>
                     <p style={{fontFamily:'Poppins',fontSize:'25px',marginBottom:'0px',fontWeight:'bold',marginLeft:'20px'}}>Login</p>
                     <label>Email:</label>
                     <input type='email' placeholder='Email' name='email' value={email} onChange={(e) => setEmail(e.target.value)} required></input>
@@ -115,7 +115,7 @@ const SignUp = ({ onSetUser }) =>{
                     <span style={{display:'flex',alignItems:'center',fontFamily:'poppins',marginLeft:'20px'}}><p style={{fontSize:'15px'}}>Don't have account?</p><p style={{textDecoration:'none',fontSize:'15px',marginLeft:'2px',cursor:'pointer',color:'blue'}} onClick={() => manageAccount('Signup')}>SignUp</p></span>
                 </form>
             ) : (
-                <form className='signup' id='signup' style={{width:'550px',height:'auto',backgroundColor:'#ffd32c',borderRadius:'9px',display:'flex',flexDirection:'column'}}>
+                <form className='signup' id='signup'>
                     <p style={{fontFamily:'Poppins',fontSize:'25px',marginBottom:'0px',fontWeight:'bold',marginLeft:'20px'}}>Signup</p>
                     <label>Full Name</label>
                     <input type='text' placeholder='Full Name' name='name' value={name} onChange={(e) => setName(e.target.value)} required></input>
