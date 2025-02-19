@@ -3,7 +3,7 @@ import AddSpace from './Components/AddSpace';
 import MapComponent from './Components/MapComponent';
 import HereWeGo from './Components/HereWeGo';
 import SignUp from './Components/SignUp';
-import { HashRouter as Router, Route, Routes } from "react-router-dom";
+import { HashRouter as Router, Route, Routes,Link } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import Home from './Components/Home';
 import PublicSpace from './Components/PublicSpace';
@@ -43,11 +43,11 @@ function App() {
       <header>
         <p className='logo'>RentPar</p>
         <div className='menu-bar'>
-          <a href='/'>Home</a>
-          <a href=''>Contact</a>
-          <a href='/publicspace'>Underoof Space</a>
-          <a href='/addSpace'>Add Space</a>
-          <a href='/account' onClick={(e) => { if (actionState) {e.preventDefault(); handleLogout(e);}}}><p className='login-button'>{status}</p></a>
+          <Link to='/'>Home</Link>
+          <Link to=''>Contact</Link>
+          <Link to='/publicspace'>Underoof Space</Link>
+          <Link to='/addSpace'>Add Space</Link>
+          <Link to='/account' onClick={(e) => { if (actionState) {e.preventDefault(); handleLogout(e);}}}><p className='login-button'>{status}</p></Link>
         </div>
       </header>
         <Routes>
