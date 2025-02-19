@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import '../App.css'
 import HereWeGo from './HereWeGo'
+import { Link } from 'react-router-dom';
+
 const Home = (props) => {
     const [nearbyLocations, setNearbyLocations] = useState([]);
     console.log('Home received nearby locations:', nearbyLocations);
@@ -51,7 +53,7 @@ const Home = (props) => {
             <span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'0px'}}>Help</span><span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'5px',color:'#ffd32c'}}>Us</span><span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'5px',}}>Get Better!</span>
             <span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'10px'}}>Help</span><span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'5px',color:'#ffd32c'}}>Yourself</span><span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'5px',}}>Get Better</span><span style={{fontFamily:'poppins',fontWeight:'bold',marginLeft:'5px',color:'#1A7499'}}> Space!</span>
             </div>
-            <div className='public-help-button'><a href='/publicspace'>Add Space</a></div>
+            <div className='public-help-button'><Link to='/publicspace'>Add Space</Link></div>
         </div>
       <div className='mid-strip'>
         <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9cKxiHkSd5yxc3G6Qnu3lgYaAIWdzy-htFA&s' alt='map-image'></img>
