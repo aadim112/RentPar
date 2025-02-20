@@ -1,6 +1,10 @@
 .App {
   text-align: center;
 }
+body{
+  margin: 0px;
+  padding: 0px;
+}
 
 .App-logo {
   height: 40vmin;
@@ -60,7 +64,7 @@ header{
   font-weight: bolder;
 }
 .menu-bar{
-  width: 600px;
+  width: 700px;
   height: auto;
   display: flex;
   align-items: center;
@@ -127,7 +131,7 @@ header{
   display: flex;
   flex-direction: column;
   max-height: 270px;
-  overflow-y: hidden;
+  overflow-y: scroll;
 }
 .nearby-location::-webkit-scrollbar{
   display: none;
@@ -569,8 +573,35 @@ footer{
 .add-space-container{
   padding-bottom: 20px;
 }
+.bank-detail-input input:nth-child(2){
+  margin-left: 10px;
+}
 .nearby-location::-webkit-scrollbar{
   display: none;
+}
+.profile-details{
+  width: 100%;
+  height: auto;
+  padding-bottom: 20px;
+  background-color: #ffd32c;
+  padding-top:10px ;
+}
+.profile-details h2{
+  font-family: poppins;
+  margin: 0px;
+  margin-left: 30px;
+}
+.info-container{
+  width: 300px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-left: 30px;
+}
+.info-container p{
+  font-family: poppins;
+  margin: 0px;
 }
 
 @media(max-width:1160px){
@@ -661,15 +692,17 @@ footer{
   .hero-text{
     width: 300px;
     font-size: 15px;
+    margin-left: 0px;
   }
   .nearby-location{
     width: 100%;
     margin-left: 0px;
-    overflow-y: auto;
+    overflow: scroll;
   }
   .hero-book{
     width: 100%;
     margin-left: 0px;
+    display: block;
   }
   .mid-strip img{
     width: 50px;
@@ -700,6 +733,7 @@ footer{
   }
   .map-container{
     width: 90%;
+    margin-left: 0px;
   }
   .space-type{
     height: auto;

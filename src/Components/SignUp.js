@@ -45,59 +45,55 @@ const SignUp = ({ onSetUser }) =>{
         const userData = {
             uid: user.uid,
             name: user.displayName || "Unknown", // Handle missing name
-            email: user.email
+            email: user.email,
+            spaces : []
         };
         setSessionUser(userData);
         sessionStorage.setItem("user", JSON.stringify(userData));
 
-        //   //storing the sessional data
-        //   sessionStorage.setItem("user", JSON.stringify({
-        //     uid : user.uid,
-        //     name : user.displayName,
-        //     email: user.email
-        //   }));
-        //alert("Login Successful!");
         navigate('/');
         } catch (err) {
           setError('Invalid Credentials');
         }
       };
+      
       const handleSignup = async (e) => {
         e.preventDefault();
         try {
-          const userCredendail = await createUserWithEmailAndPassword(auth, email, password);
-          const user = userCredendail.user;
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
 
-        //Storing the sessional data
-        const userData = {
-            uid: user.uid,
-            name: user.displayName || "Unknown", // Handle missing name
-            email: user.email
-        };
-        setSessionUser(userData);
-        sessionStorage.setItem("user", JSON.stringify(userData));
-        
-        //storing the sessional data
-          sessionStorage.setItem("user", JSON.stringify({
-            uid : user.uid,
-            name : user.displayName,
-            email: user.email
-          }));
-          alert("Account Created Successfully!");
-          navigate('/');
-          setAction('Logout');
+            // 🔹 Update user profile in Firebase Auth
+            await updateProfile(user, { displayName: name });
+
+            // 🔹 Store user in Firebase Realtime Database
+            const db = getDatabase();
+            set(ref(db, "users/" + user.uid), {
+                uid: user.uid,
+                name: name,
+                email: email,
+                createdAt: new Date().toISOString()
+            });
+
+            // 🔹 Store session data
+            const userData = {
+                uid: user.uid,
+                name: name,
+                email: email
+            };
+
+            setSessionUser(userData);
+            sessionStorage.setItem("user", JSON.stringify(userData));
+
+            alert("Account Created Successfully!");
+            navigate('/')
         } catch (err) {
-          setError('Invalid Credentials');
+            setError(err.message);
         }
-      };
+    };
 
-            // //Checking user in the session or not
-            // const user = JSON.parse(sessionStorage.getItem("user"));
-            // if (user) {
-            //     console.log("Logged-in user:", user.name);
-            // } else {
-            //     console.log("No user logged in");
-            // }
+
+
         
 
     return(

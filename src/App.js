@@ -6,12 +6,12 @@ import SignUp from './Components/SignUp';
 import { useEffect, useState } from 'react';
 import Home from './Components/Home';
 import PublicSpace from './Components/PublicSpace';
+import Profile from './Components/Profile';
 import { HashRouter as Router, Route, Routes,Link } from "react-router-dom";
 
 
 
-function App() {
-
+function App(){
   
   const [sessionUser, setSessionUser] = useState({ uid: null });
   const [actionState, setActionState] = useState(false);
@@ -19,10 +19,11 @@ function App() {
 
   useEffect(() => {
     const storedUser = JSON.parse(sessionStorage.getItem("user"));
-    if (storedUser) {
+    if(storedUser && storedUser.uid) {
       setSessionUser(storedUser);
       setActionState(true)
       seStatus('Logout');
+      console.log(sessionUser);
     }
   }, [actionState,status]);
 
@@ -33,8 +34,8 @@ function App() {
     if (actionState) {
       sessionStorage.removeItem("user");  
       setSessionUser({ uid: null });
-      setActionState(true)
-      seStatus('Login/Signup');
+      setActionState(false);
+      seStatus('Login');
       console.log("User logged out");
     }
   };
@@ -49,14 +50,16 @@ function App() {
           <Link to=''>Contact</Link>
           <Link to='/publicspace'>Underoof Space</Link>
           <Link to='/addSpace'>Add Space</Link>
+          {actionState && <Link to='/profile'>Profile</Link>}
           <Link to='/account' onClick={(e) => { if (actionState) {e.preventDefault(); handleLogout(e);}}}><p className='login-button'>{status}</p></Link>
         </div>
       </header>
         <Routes>
-          <Route path="/addSpace" element={actionState ? <AddSpace /> : <SignUp onSetUser={setSessionUser} />} />
+          <Route path="/addSpace" element={actionState ? <AddSpace user={sessionUser.uid} /> : <SignUp onSetUser={setSessionUser} />} />
           <Route path="/account" element={<SignUp onSetUser={setSessionUser} />} />
           <Route path="/" element={<Home name={sessionUser && sessionUser.email} />} />
           <Route path='/publicspace' element={<PublicSpace/>}></Route>
+          <Route path='/profile' element={actionState? <Profile user={sessionUser}/> :  <SignUp onSetUser={setSessionUser} /> }></Route>
         </Routes>
       <footer>
         <p>The Website is held to copyright.</p>

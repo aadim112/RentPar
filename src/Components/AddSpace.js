@@ -2,12 +2,13 @@ import { useState,useEffect  } from 'react';
 import '../App.css'
 import { db } from '../firebase';
 import MapComponent from './MapComponent';
-import { onValue,ref,getDatabase,set } from 'firebase/database';
+import { onValue,ref,getDatabase,set, get,update } from 'firebase/database';
 import { v4 as uuidv4 } from "uuid"; // Generate unique IDs
 
 
-function AddSpace(){
+const AddSpace = (props) => {
 
+  console.log(props.user);
   const [Lcn,setSetLocation] = useState({lat:0,lng:0})
   const [data,setData] = useState({})
   const [decoration, setDecoration] = useState({ display: "none",color:'red',fontWeight:'bold' });
@@ -23,7 +24,8 @@ function AddSpace(){
     AccountNumber: 0,
     IFSC: "",
     image: null, // Store uploaded image
-    allocated : 0
+    allocated : 0,
+    uid : props,
   });
 
     // Sync Lcn with spacedetails.parking when Lcn changes
@@ -89,23 +91,44 @@ function AddSpace(){
   };
 
  // Submit form and save data to Firebase Realtime Database
- const UploadSpace = (event) => {
+ const UploadSpace = async (event) => {
   event.preventDefault();
-
   const db = getDatabase();
-  const spaceId = uuidv4(); // Unique ID for each entry
+  const spaceId = uuidv4(); // Generate unique ID for parking space
   const imageName = spacedetails.image ? `${spaceId}-${spacedetails.image.name}` : "";
 
+  // Construct new space details
   const newSpaceDetails = {
     ...spacedetails,
     image: imageName, // Save image name only
   };
 
-  set(ref(db, `parkingSpaces/${spaceId}`), newSpaceDetails)
-    .then(() => alert("Parking space added successfully!"))
-    .catch((error) => console.error("Error saving data:", error));
+  try {
+    // Step 1: Save parking space in `parkingSpaces/`
+    await set(ref(db, `parkingSpaces/${spaceId}`), newSpaceDetails);
+    console.log("Parking space added successfully!");
 
-  console.log("Save image manually as:", `/src/assets/${imageName}`);
+    // Step 2: Update the user's `space` array
+    const userRef = ref(db, `users/${props.user}/space`);
+    const snapshot = await get(userRef);
+
+    let userSpaces = [];
+    if (snapshot.exists()) {
+      userSpaces = snapshot.val(); // Retrieve existing array
+    }
+
+    // Append new spaceId to array
+    userSpaces.push(spaceId);
+
+    // Update the user's `space` field
+    await update(ref(db, `users/${props.user}`), { space: userSpaces });
+
+    alert("Parking space added and linked to user!");
+    document.getElementById('add-space-form').reset();
+    console.log("Save image manually as:", `/src/assets/${imageName}`);
+  } catch (error) {
+    console.error("Error saving data:", error);
+  }
 };
 
   return (
@@ -113,7 +136,7 @@ function AddSpace(){
       <div className='add-space-container'>
         <div style={{width:'100%',height:'20px'}}></div>
         <p style={{marginLeft:'30px',fontFamily:'poppins',fontSize:'25px',fontWeight:'bolder'}}>Add Your Parking Space</p>
-        <form className='add-space-form'>
+        <form className='add-space-form' id='add-space-form'>
             <label>Full Name</label>
             <input type='text' placeholder='Full Name*' name='fullname' onChange={handleChange}></input>
             <label>Age*</label>
