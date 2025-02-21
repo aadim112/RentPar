@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import '../App.css'
 import HereWeGo from './HereWeGo'
 import { Link } from 'react-router-dom';
+import { ref } from 'firebase/database';
+import { db } from '../firebase';
 
 const Home = (props) => {
     const [nearbyLocations, setNearbyLocations] = useState([]);
     console.log('Home received nearby locations:', nearbyLocations);
     const [selectMarker,setSelectMarker] = useState({});
     const user = JSON.parse(sessionStorage.getItem("user"));
-
 
     function handleSelectedLocation(nearbyLocations){
         setSelectMarker(nearbyLocations);
@@ -32,11 +33,12 @@ const Home = (props) => {
                             {nearbyLocations.length > 0 ?(nearbyLocations.map((location,index)=> (
                                 <div className='location-container' key={index} onClick={() => handleSelectedLocation(location)}>
                                     <div className='parking-name'><p>{`Parking ${index+1}`}</p></div>
-                                    <div className='parking-type'></div>
+                                    <div className='parking-type'>
                                     {(location?.ParkingType[0] ==='Twowheels') && (<i class="fa-solid fa-motorcycle" style={{color: '#ffffff'}}></i>) }
                                     {(location?.ParkingType[0] === 'FourWheels' || location?.ParkingType[1] ==='FourWheels') && (<i class="fa-solid fa-car" style={{color: '#ffffff'}}></i>) }
                                     {(location?.ParkingType[0] === 'Heavy Vehicle' || location?.ParkingType[1] ==='Heavy Vehicle' || location?.ParkingType[2] ==='Heavy Vehicle') && (<i class="fa-solid fa-truck" style={{color: '#ffffff'}}></i>) }
-                                    <p style={{color:'white',fontFamily:'poppins'}}>{location.Price}/hr</p>
+                                    </div>
+                                    <p>{location.Price}/min</p>
                                     <p style={{color:'white',fontFamily:'poppins'}}>Occupied: {location.allocated}/{location.capacity}</p>
                                     <div className='book-button' onClick={()=>handleBooking(location)}>Book</div>
                                 </div>

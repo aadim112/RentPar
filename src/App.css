@@ -144,6 +144,16 @@ header{
   justify-content: space-between;
   cursor: pointer; 
 }
+.location-container p:nth-child(3){
+  color: white;
+  font-family: poppins;
+  width: 80px;
+}
+.location-container p:nth-child(4){
+  color: white;
+  font-family: poppins;
+  width: 130px;
+}
 .location-container:hover{
   background-color: rgb(85, 85, 85);
 }
@@ -158,7 +168,7 @@ header{
   height: auto;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   flex-direction: row;
   gap: 10px;
 }
@@ -603,6 +613,61 @@ footer{
   font-family: poppins;
   margin: 0px;
 }
+.Space-details{
+  width: 100%;
+  height: auto;
+  padding-bottom: 20px;
+  margin-top: 20px;
+}
+.space-l{
+  width: 90%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  margin-left: 30px;
+  margin-top: 10px;
+  gap: 10px;
+}
+.space-header{
+  width: 100%;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: black;
+  font-family: poppins;
+  margin-left: 20px;
+  font-weight: bold;
+}
+.space{
+  width: 100%;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: black;
+  font-family: poppins;
+  cursor: pointer;
+}
+.space p:nth-child(1){
+  width: 200px;
+  text-align: center;
+  word-wrap: nowrap;
+}
+.space p:nth-child(2){
+  width: 60px;
+}
+.space p:nth-child(3){
+  width: 30px;
+}
+.space p:nth-child(4){
+  width: 30px;
+  text-align: center;
+}
+.space:hover{
+  background-color: rgb(217, 217, 217);
+}
+
 
 @media(max-width:1160px){
   header{
@@ -686,22 +751,29 @@ footer{
   .user{
     font-size: 10px;
   }
-  .hero-information{
+  .hero-section{
     width: 100%;
+    padding: 0px;
+    padding-bottom: 10px;
+  }
+  .hero-information{
+    width: 90%;
   }
   .hero-text{
     width: 300px;
     font-size: 15px;
     margin-left: 0px;
+    margin-left: 10px;
   }
   .nearby-location{
     width: 100%;
     margin-left: 0px;
     overflow: scroll;
+    margin-left: 10px;
   }
   .hero-book{
-    width: 100%;
-    margin-left: 0px;
+    width: 95%;
+    margin-left: 10px;
     display: block;
   }
   .mid-strip img{
@@ -717,15 +789,16 @@ footer{
     padding-top: 20px;
   }
   .parking-name p{
+    width: 100px;
     font-size: 12px;
   }
   .parking-type{
-    width: 50px;
+    width: 20px;
     display: none;
   }
   .location-container p{
     font-size: 12px;
-    width: auto;
+    width: 100px;
   }
   .add-space-form{
     width: 100%;
@@ -755,5 +828,19 @@ footer{
   }
   .signup input{
     width: 80%;
+  }
+  .space-header{
+    margin: 0px;
+    font-size: 12px;
+  }
+  .space{
+    margin: 0px;
+  }
+  .space p:nth-child(1){
+    width: 100px;
+    text-align: left;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 }

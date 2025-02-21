@@ -177,7 +177,7 @@ const AddSpace = (props) => {
               <label style={{marginTop:'30px'}}>Capacity OF Parking Space</label>
               <input type='number' placeholder='Capacity of Space' name='capacity' onChange={handleChange} required></input>
 
-              <label>Rent Per Slot</label>
+              <label>Rent Per Slot / minute</label>
               <input type='number' placeholder='Rent Per Slot' name='Price' onChange={handleChange} required></input>
 
               <label>Add Your Banking Details</label>
