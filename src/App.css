@@ -1,44 +1,6 @@
-.App {
-  text-align: center;
-}
 body{
   margin: 0px;
   padding: 0px;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 canvas{
@@ -50,16 +12,29 @@ body{
 }
 header{
   width: 100%;
-  height: 65px;
+  height: 75px;
   background-color: black;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  transition: max-height 0.5s ease-in-out;
+}
+.logo-bar{
+  width: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  margin-left: 20px;
+}
+.logo-bar img{
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
 }
 .logo{
   color: white;
   font-family: poppins;
-  margin-left: 30px;
   font-size: 25px;
   font-weight: bolder;
 }
@@ -75,6 +50,14 @@ header{
   text-decoration: none;
   font-family: poppins;
   margin-right: 30px;
+}
+.drop-down{
+  width: 80px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  display: none;
 }
 .hero-section{
   width: 100%;
@@ -667,6 +650,69 @@ footer{
 .space:hover{
   background-color: rgb(217, 217, 217);
 }
+.booking-form{
+  width: 300px;
+  padding: 20px;
+  background-color: white;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  font-family: poppins;
+  border-radius: 9px;
+  display: none;
+}
+.background-converter{
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 4;
+  display: none;
+}
+.booking-form p{
+  margin: 0px;
+}
+.booking-f{
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+.booking-f label{
+  font-size: 12px;
+  margin-top: 10px;
+  margin-left: 5px;
+}
+.booking-f input{
+  border: 0px;
+  width: 70%;
+  padding: 5px;
+  height: 30px;
+  font-family: poppins;
+  border-radius: 7px;
+  background-color: rgb(214, 214, 214);
+}
+.booking-f input:focus{
+  outline: none;
+}
+.booking-f p{
+  margin-top: 10px;
+}
+.booking-f button{
+  width: 100px;
+  height: 30px;
+  background-color: black;
+  color: white;
+  border: 0px;
+  border-radius: 5px;
+  font-family: poppins;
+  cursor: pointer;
+  margin-top: 10px;
+} 
 
 
 @media(max-width:1160px){
@@ -681,7 +727,7 @@ footer{
   }
   .logo{
     margin-left: 0px;
-    margin-bottom: 0px;
+    margin-bottom: 10px;
   }
   .menu-bar a{
     margin: 0px;
@@ -740,16 +786,30 @@ footer{
     width: auto;
   }
 }
+
+
 @media(max-width:600px){
+  header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    align-items: center;
+  }
   .menu-bar{
     width: 100%;
     display: flex;
     justify-content: start;
     flex-direction: column;
     height: auto;
+    display: none;
+  }
+  .drop-down{
+    height: 100%;
+    display: flex;
   }
   .user{
-    font-size: 10px;
+    font-size: 15px;
   }
   .hero-section{
     width: 100%;
@@ -842,5 +902,24 @@ footer{
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+  }
+  .menuactive{
+    display: grid;
+    grid-template-rows: 50px 50px;
+    grid-template-columns: 100px 100px 130px;
+    justify-content: left;
+    margin-left: 25px;
+  }
+  .headeractive{
+    max-height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 10px;
+  }
+  .droprotate{
+    margin-top: 15px;
+    margin-bottom: 10px;
+    transform: rotate(180deg);
   }
 }

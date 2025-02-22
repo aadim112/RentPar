@@ -8,6 +8,8 @@ import Home from './Components/Home';
 import PublicSpace from './Components/PublicSpace';
 import Profile from './Components/Profile';
 import { HashRouter as Router, Route, Routes,Link } from "react-router-dom";
+import logo from './Assets/park white.png'
+import svglogo from './Assets/park.svg'
 
 
 
@@ -40,18 +42,30 @@ function App(){
     }
   };
 
+  const controlmenu = () => {
+    document.querySelector('#header').classList.toggle('headeractive');
+    document.querySelector('#menu-bar').classList.toggle('menuactive');
+    document.querySelector('#drop-down').classList.toggle('droprotate');
+  }
+
 
   return (
     <div style={{ width: '100%' }}>
-      <header>
-        <p className='logo'>RentPar</p>
-        <div className='menu-bar'>
+      <header id='header'>
+        <div className='logo-bar'>
+          <img src={svglogo}></img>
+          <p className='logo'>Parkhere.</p>
+        </div>
+        <div className='menu-bar' id='menu-bar'>
           <Link to='/'>Home</Link>
           <Link to=''>Contact</Link>
           <Link to='/publicspace'>Underoof Space</Link>
           <Link to='/addSpace'>Add Space</Link>
           {actionState && <Link to='/profile'>Profile</Link>}
           <Link to='/account' onClick={(e) => { if (actionState) {e.preventDefault(); handleLogout(e);}}}><p className='login-button'>{status}</p></Link>
+        </div>
+        <div className='drop-down' id='drop-down' onClick={controlmenu}>
+        <i class="fa-solid fa-caret-down fa-lg" style={{color: "#ffffff"}}></i>
         </div>
       </header>
         <Routes>

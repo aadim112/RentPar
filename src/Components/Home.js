@@ -10,6 +10,29 @@ const Home = (props) => {
     console.log('Home received nearby locations:', nearbyLocations);
     const [selectMarker,setSelectMarker] = useState({});
     const user = JSON.parse(sessionStorage.getItem("user"));
+    const [tobookspace,setToBookSpace] = useState({});
+    const [cost, setCost] = useState(0);
+    const [time, setTime] = useState(0);
+    const [vehicleNumber, setVehicleNumber] = useState("");
+
+
+    const handleBook = (e) => {
+        const { name, value } = e.target;
+        if (name === "time") {
+        const parkingTime = parseFloat(value) || 0; // Convert to number, default to 0 if invalid
+        setTime(parkingTime);
+        setCost(parkingTime * parseInt(tobookspace.Price)); // Calculate total cost
+        } else if (name === "vehicleNumber"){
+        setVehicleNumber(value);
+        }
+    };
+
+    const close = (e) => {
+        e.preventDefault();
+        setCost(0);
+        document.getElementById('booking-form').style.display = 'none';
+        document.getElementById('background-converter').style.display = 'none';
+    }
 
     function handleSelectedLocation(nearbyLocations){
         setSelectMarker(nearbyLocations);
@@ -17,7 +40,9 @@ const Home = (props) => {
     }
     function handleBooking(bookingLocation){
         if(user){
-            alert("You booked the location for: "+bookingLocation.Price+' for 1hr');
+            setToBookSpace(bookingLocation);
+            document.getElementById('booking-form').style.display = 'block';
+            document.getElementById('background-converter').style.display = 'block';
         }else{
             alert("Login to the website first")
         }
@@ -39,7 +64,7 @@ const Home = (props) => {
                                     {(location?.ParkingType[0] === 'Heavy Vehicle' || location?.ParkingType[1] ==='Heavy Vehicle' || location?.ParkingType[2] ==='Heavy Vehicle') && (<i class="fa-solid fa-truck" style={{color: '#ffffff'}}></i>) }
                                     </div>
                                     <p>{location.Price}/min</p>
-                                    <p style={{color:'white',fontFamily:'poppins'}}>Occupied: {location.allocated}/{location.capacity}</p>
+                                    <p>Occupied: {location.allocated}/{location.capacity}</p>
                                     <div className='book-button' onClick={()=>handleBooking(location)}>Book</div>
                                 </div>
                             ))):(<p style={{marginLeft:'30px',fontFamily:'poppins',color:'white'}}>No Parking at searched location</p>)}
@@ -60,6 +85,22 @@ const Home = (props) => {
       <div className='mid-strip'>
         <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9cKxiHkSd5yxc3G6Qnu3lgYaAIWdzy-htFA&s' alt='map-image'></img>
         <p>Mapbox</p>
+      </div>
+      <div className='background-converter' id='background-converter'></div>
+      <div className='booking-form' id='booking-form'>
+        <p>About Parking</p>
+        <p>Price: {tobookspace.Price}/min</p>
+        <form className='booking-f'>
+            <label>Vehicle Number</label>
+            <input type='text' placeholder='Enter your vehicle number' name='vehicleNumber' value={vehicleNumber} onChange={handleBook} required></input>
+            <label>For how much time you will park</label>
+            <input type='number' placeholder='Time' name='time' value={time} onChange={handleBook} required></input>
+            <p>Total Cost: {cost}Rs.</p>
+            <div style={{display:'flex',gap:'10px'}}>
+                <button style={{backgroundColor:'#ffd32c',color:'black'}}>Book</button>
+                <button style={{backgroundColor:'white',color:'black',border:'1px solid black'}} onClick={close}>Cancel</button>
+            </div>
+        </form>
       </div>
     </>
     );
