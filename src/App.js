@@ -10,7 +10,7 @@ import Profile from './Components/Profile';
 import { HashRouter as Router, Route, Routes,Link } from "react-router-dom";
 import logo from './Assets/park white.png'
 import svglogo from './Assets/park.svg'
-
+import OrganisationalParking from './Components/OrganisationalParking';
 
 
 function App(){
@@ -59,7 +59,7 @@ function App(){
         <div className='menu-bar' id='menu-bar'>
           <Link to='/'>Home</Link>
           <Link to=''>Contact</Link>
-          <Link to='/publicspace'>Underoof Space</Link>
+          <Link to='/OrganisationParking'>Underoof Space</Link>
           <Link to='/addSpace'>Add Space</Link>
           {actionState && <Link to='/profile'>Profile</Link>}
           <Link to='/account' onClick={(e) => { if (actionState) {e.preventDefault(); handleLogout(e);}}}><p className='login-button'>{status}</p></Link>
@@ -74,6 +74,7 @@ function App(){
           <Route path="/" element={<Home name={sessionUser && sessionUser.email} />} />
           <Route path='/publicspace' element={<PublicSpace/>}></Route>
           <Route path='/profile' element={actionState? <Profile user={sessionUser}/> :  <SignUp onSetUser={setSessionUser} /> }></Route>
+          <Route path='/OrganisationParking' element={<OrganisationalParking/>}></Route>
         </Routes>
       <footer>
         <p>The Website is held to copyright.</p>
