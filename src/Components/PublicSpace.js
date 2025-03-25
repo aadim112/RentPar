@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { db } from '../firebase';
 import { set, ref, push, get, update } from 'firebase/database';
 import '../App.css';
+import PublicSpaceMap from './PublicSpaceMap'; // Import the map component
 
 function PublicSpace() {
     const [publicSpace, setPublicSpace] = useState({
@@ -63,7 +64,7 @@ function PublicSpace() {
                     // If found, increment votes by 1
                     const existingRef = ref(db, `publicSpace/${existingEntryKey}`);
                     update(existingRef, { votes: snapshot.child(existingEntryKey).val().votes + 1 })
-                        .then(() => alert("Thanks for contribution. Go can go back"))
+                        .then(() => alert("Thanks for contribution"))
                         .catch((error) => console.error("Error updating votes: ", error));
                     return;
                 }
@@ -95,7 +96,11 @@ function PublicSpace() {
             <p style={{ fontFamily: 'Poppins', fontSize: '19px', marginLeft: '30px' }}>
                 Stand at the exact place to add the space.
             </p>
-            <form className='public-form' onSubmit={handleAddSpace}>
+
+            {/* Add the PublicSpaceMap to display existing markers */}
+            <div className='one-container'>
+                <PublicSpaceMap />
+                <form className='public-form' onSubmit={handleAddSpace}>
                 <label>Capacity Of Parking</label>
                 <input 
                     type='number' 
@@ -114,6 +119,7 @@ function PublicSpace() {
                 <div className='get-location' onClick={fetchLocation}>Fetch location</div>
                 <button type='submit'>Add Space</button>
             </form>
+            </div>
         </div>
     );
 }

@@ -495,8 +495,9 @@ header{
 }
 .add-public-space{
   width: 100%;
-  height: 400px;
+  height: auto;
   background-color: #ffd32c;
+  padding-bottom: 30px;
 }
 .public-form{
   margin-left: 30px;
@@ -911,6 +912,11 @@ footer{
 
 .organisation-book-button:active {
   background-color: #b45309;
+}
+.one-container{
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 30px;
 }
 
 

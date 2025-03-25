@@ -60,7 +60,7 @@ function App(){
           <Link to='/'>Home</Link>
           <Link to=''>Contact</Link>
           <Link to='/OrganisationParking'>Underoof Space</Link>
-          <Link to='/addSpace'>Add Space</Link>
+          {sessionStorage['user'] &&<Link to='/addSpace'>Add Space</Link>}
           {actionState && <Link to='/profile'>Profile</Link>}
           <Link to='/account' onClick={(e) => { if (actionState) {e.preventDefault(); handleLogout(e);}}}><p className='login-button'>{status}</p></Link>
         </div>
