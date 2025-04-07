@@ -11,6 +11,7 @@ import { HashRouter as Router, Route, Routes,Link } from "react-router-dom";
 import logo from './Assets/park white.png'
 import svglogo from './Assets/park.svg'
 import OrganisationalParking from './Components/OrganisationalParking';
+import PaymentGateway from './Components/PaymentGateway';
 
 
 function App(){
@@ -75,6 +76,7 @@ function App(){
           <Route path='/publicspace' element={<PublicSpace/>}></Route>
           <Route path='/profile' element={actionState? <Profile user={sessionUser}/> :  <SignUp onSetUser={setSessionUser} /> }></Route>
           <Route path='/OrganisationParking' element={<OrganisationalParking/>}></Route>
+          <Route path='/payment-gateway' element={<PaymentGateway/>}></Route>
         </Routes>
       <footer>
         <p>The Website is held to copyright.</p>

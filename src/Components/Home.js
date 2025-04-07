@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react';
 import '../App.css'
 import HereWeGo from './HereWeGo'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
 import { ref } from 'firebase/database';
 import { db } from '../firebase';
 
 const Home = (props) => {
     const [nearbyLocations, setNearbyLocations] = useState([]);
     console.log('Home received nearby locations:', nearbyLocations);
-    const [selectMarker,setSelectMarker] = useState({});
+    const [selectMarker, setSelectMarker] = useState({});
     const user = JSON.parse(sessionStorage.getItem("user"));
-    const [tobookspace,setToBookSpace] = useState({});
+    const [tobookspace, setToBookSpace] = useState({});
     const [cost, setCost] = useState(0);
     const [time, setTime] = useState(0);
     const [vehicleNumber, setVehicleNumber] = useState("");
-
+    const navigate = useNavigate(); // Initialize useNavigate
 
     const handleBook = (e) => {
         const { name, value } = e.target;
@@ -27,6 +27,27 @@ const Home = (props) => {
         }
     };
 
+    const BookSpace = async (e) => {
+        e.preventDefault(); // Prevent default form submission
+        
+        // Create booking info object
+        const bookingInfo = {
+            vehicleNumber: vehicleNumber,
+            price: cost,
+            details: {
+                "Vehicle Type": "SUV",
+                "Duration": `${time} minutes`,
+                "Location": tobookspace.location || "Unknown",
+                "Parking Type": tobookspace.ParkingType ? tobookspace.ParkingType[0] : "Standard"
+            }        
+        };
+        
+        // Navigate to PaymentGateway page with state
+        navigate('/payment-gateway', { 
+            state: { bookingInfo } 
+        });
+    }
+
     const close = (e) => {
         e.preventDefault();
         setCost(0);
@@ -38,6 +59,7 @@ const Home = (props) => {
         setSelectMarker(nearbyLocations);
         console.log("marker details",selectMarker)
     }
+
     function handleBooking(bookingLocation){
         if(user){
             setToBookSpace(bookingLocation);
@@ -47,6 +69,7 @@ const Home = (props) => {
             alert("Login to the website first")
         }
     }
+
     return(
     <>
         <p className='user'> Welcome! {props.name}</p>
@@ -59,9 +82,9 @@ const Home = (props) => {
                                 <div className='location-container' key={index} onClick={() => handleSelectedLocation(location)}>
                                     <div className='parking-name'><p>{`Parking ${index+1}`}</p></div>
                                     <div className='parking-type'>
-                                    {(location?.ParkingType[0] ==='Twowheels') && (<i class="fa-solid fa-motorcycle" style={{color: '#ffffff'}}></i>) }
-                                    {(location?.ParkingType[0] === 'FourWheels' || location?.ParkingType[1] ==='FourWheels') && (<i class="fa-solid fa-car" style={{color: '#ffffff'}}></i>) }
-                                    {(location?.ParkingType[0] === 'Heavy Vehicle' || location?.ParkingType[1] ==='Heavy Vehicle' || location?.ParkingType[2] ==='Heavy Vehicle') && (<i class="fa-solid fa-truck" style={{color: '#ffffff'}}></i>) }
+                                    {(location?.ParkingType[0] ==='Twowheels') && (<i className="fa-solid fa-motorcycle" style={{color: '#ffffff'}}></i>) }
+                                    {(location?.ParkingType[0] === 'FourWheels' || location?.ParkingType[1] ==='FourWheels') && (<i className="fa-solid fa-car" style={{color: '#ffffff'}}></i>) }
+                                    {(location?.ParkingType[0] === 'Heavy Vehicle' || location?.ParkingType[1] ==='Heavy Vehicle' || location?.ParkingType[2] ==='Heavy Vehicle') && (<i className="fa-solid fa-truck" style={{color: '#ffffff'}}></i>) }
                                     </div>
                                     <p>{location.Price}/min</p>
                                     <p>Occupied: {location.allocated}/{location.capacity}</p>
@@ -97,7 +120,7 @@ const Home = (props) => {
             <input type='number' placeholder='Time' name='time' value={time} onChange={handleBook} required></input>
             <p>Total Cost: {cost}Rs.</p>
             <div style={{display:'flex',gap:'10px'}}>
-                <button style={{backgroundColor:'#ffd32c',color:'black'}}>Book</button>
+                <button style={{backgroundColor:'#ffd32c',color:'black'}} onClick={BookSpace}>Book</button>
                 <button style={{backgroundColor:'white',color:'black',border:'1px solid black'}} onClick={close}>Cancel</button>
             </div>
         </form>

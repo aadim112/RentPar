@@ -82,7 +82,7 @@ const Profile = (props) => {
             <p>Email: {userdata.email}</p>
         </div>
         <div className='Space-details'>
-          <h2>My Spaces</h2>
+          <h2>My Listed Spaces</h2>
           {userSpaces.length > 0 ?(
             <div className='space-l'>
               <div className='space-header'>
