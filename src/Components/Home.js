@@ -1,9 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import '../App.css'
 import HereWeGo from './HereWeGo'
 import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
-import { ref } from 'firebase/database';
-import { db } from '../firebase';
 
 const Home = (props) => {
     const [nearbyLocations, setNearbyLocations] = useState([]);
@@ -13,34 +11,47 @@ const Home = (props) => {
     const [tobookspace, setToBookSpace] = useState({});
     const [cost, setCost] = useState(0);
     const [time, setTime] = useState(0);
+    const [startTime, setStartTime] = useState('');
     const [vehicleNumber, setVehicleNumber] = useState("");
     const navigate = useNavigate(); // Initialize useNavigate
 
     const handleBook = (e) => {
         const { name, value } = e.target;
         if (name === "time") {
-        const parkingTime = parseFloat(value) || 0; // Convert to number, default to 0 if invalid
-        setTime(parkingTime);
-        setCost(parkingTime * parseInt(tobookspace.Price)); // Calculate total cost
-        } else if (name === "vehicleNumber"){
-        setVehicleNumber(value);
+            const parkingTime = parseFloat(value) || 0; // Convert to number, default to 0 if invalid
+            setTime(parkingTime);
+            setCost(parkingTime * parseInt(tobookspace.Price)); // Calculate total cost
+        } else if (name === "vehicleNumber") {
+            setVehicleNumber(value);
+        } else if (name === "startTime") {
+            setStartTime(value);
         }
     };
 
     const BookSpace = async (e) => {
         e.preventDefault(); // Prevent default form submission
         
+        // Get current date in YYYY-MM-DD format
+        const today = new Date().toISOString().split('T')[0];
+        // Combine today's date with selected time
+        const fullStartDateTime = `${today}T${startTime}`;
+        
         // Create booking info object
         const bookingInfo = {
             vehicleNumber: vehicleNumber,
             price: cost,
+            startTime: fullStartDateTime,
             details: {
                 "Vehicle Type": "SUV",
                 "Duration": `${time} minutes`,
-                "Location": tobookspace.location || "Unknown",
+                "id": selectMarker.id || "id",
+                "Start Time": startTime,
                 "Parking Type": tobookspace.ParkingType ? tobookspace.ParkingType[0] : "Standard"
-            }        
+            },
+            location: selectMarker.parking || "location",
+            otherDetails : selectMarker,
         };
+        console.log("Booking Info:", bookingInfo);
         
         // Navigate to PaymentGateway page with state
         navigate('/payment-gateway', { 
@@ -51,6 +62,7 @@ const Home = (props) => {
     const close = (e) => {
         e.preventDefault();
         setCost(0);
+        setStartTime('');
         document.getElementById('booking-form').style.display = 'none';
         document.getElementById('background-converter').style.display = 'none';
     }
@@ -63,6 +75,13 @@ const Home = (props) => {
     function handleBooking(bookingLocation){
         if(user){
             setToBookSpace(bookingLocation);
+            // Set default start time to current time (time only)
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const currentTime = `${hours}:${minutes}`;
+            setStartTime(currentTime);
+            
             document.getElementById('booking-form').style.display = 'block';
             document.getElementById('background-converter').style.display = 'block';
         }else{
@@ -116,8 +135,19 @@ const Home = (props) => {
         <form className='booking-f'>
             <label>Vehicle Number</label>
             <input type='text' placeholder='Enter your vehicle number' name='vehicleNumber' value={vehicleNumber} onChange={handleBook} required></input>
-            <label>For how much time you will park</label>
-            <input type='number' placeholder='Time' name='time' value={time} onChange={handleBook} required></input>
+            
+            <label>Start Time</label>
+            <input 
+                type='time' 
+                name='startTime' 
+                value={startTime} 
+                onChange={handleBook} 
+                required
+            ></input>
+            
+            <label>Parking Duration (minutes)</label>
+            <input type='number' placeholder='Time in minutes' name='time' value={time} onChange={handleBook} required></input>
+            
             <p>Total Cost: {cost}Rs.</p>
             <div style={{display:'flex',gap:'10px'}}>
                 <button style={{backgroundColor:'#ffd32c',color:'black'}} onClick={BookSpace}>Book</button>

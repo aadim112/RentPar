@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { db } from '../firebase';
+import { ref,set,get,update } from 'firebase/database';
 
 const PaymentGateway = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const user = JSON.parse(sessionStorage.getItem("user"));
   const bookingInfo = location.state?.bookingInfo || {
     vehicleNumber: '',
     price: 0,
@@ -22,22 +25,75 @@ const PaymentGateway = () => {
   const [bankSelected, setBankSelected] = useState('');
   const [walletNumber, setWalletNumber] = useState('');
 
-  const handlePayment = (e) => {
-    e.preventDefault();
-    setIsProcessing(true);
-    
-    // Simulate payment processing
-    setTimeout(() => {
-      setIsProcessing(false);
-      setShowSuccess(true);
-      
-      // Hide success message after 5 seconds and navigate back
-      setTimeout(() => {
-        setShowSuccess(false);
-        navigate('/');
-      }, 5000);
-    }, 2000);
+  const Transactionid = Math.random().toString(36).substring(2, 15).toUpperCase();
+
+const handlePayment = (e) => {
+  e.preventDefault();
+  setIsProcessing(true);
+
+  const trasactionDetails = {
+    vehicleNumber: bookingInfo.vehicleNumber,
+    startTime: bookingInfo.startTime,
+    price: bookingInfo.price,
+    details: bookingInfo.details,
+    duration: bookingInfo.details.Duration,
+    userId: user.uid,
+    paymentMethod: selectedMethod,
+    transactionId: Transactionid,
+    timestamp: new Date().toISOString(),
+    location : bookingInfo.location,
   };
+
+  console.log("Transaction Details:", trasactionDetails);
+
+  const transactionRef = ref(db, `transactions/${Transactionid}`);
+  const parkingSpaceRef = ref(db, `parkingSpaces/${bookingInfo.details.id}`);
+  const userBookingRef = ref(db, `users/${user.uid}/bookings/${Transactionid}`);
+
+  const addTransactionToRealtimeDB = async () => {
+    try {
+      // Step 1: Save transaction globally
+      await set(transactionRef, trasactionDetails);
+      console.log("Transaction saved to /transactions");
+
+      // Step 2: Read current parkingSpace data
+      const snapshot = await get(parkingSpaceRef);
+      const currentData = snapshot.val();
+      const currentAllocated = currentData?.allocated || 0;
+
+      // Step 3: Update parking space (increment + add booking)
+      await update(parkingSpaceRef, {
+        allocated: currentAllocated + 1,
+        [`bookings/${Transactionid}`]: trasactionDetails
+      });
+      console.log("Parking space updated");
+
+      // Step 4: Save to user’s bookings
+      await set(userBookingRef, trasactionDetails);
+      console.log("Transaction saved under user's bookings");
+
+    } catch (error) {
+      console.error("Error during transaction handling:", error);
+    }
+  };
+
+  // ✅ Call it
+  addTransactionToRealtimeDB();
+
+  // Simulate payment processing
+  setTimeout(() => {
+    setIsProcessing(false);
+    setShowSuccess(true);
+
+    setTimeout(() => {
+      setShowSuccess(false);
+      navigate('/');
+    }, 5000);
+  }, 2000);
+};
+
+  
+  
 
   const handleClose = () => {
     navigate(-1);
@@ -757,7 +813,7 @@ const PaymentGateway = () => {
             <h3 className="success-title">Payment Successful!</h3>
             <p className="success-message">Your payment of ₹{bookingInfo.price.toFixed(2)} has been processed successfully.</p>
             <div className="transaction-id">
-              Transaction ID: {Math.random().toString(36).substring(2, 15).toUpperCase()}
+              Transaction ID: {Transactionid}
             </div>
             <p className="redirect-message">You'll be redirected shortly...</p>
           </div>

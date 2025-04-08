@@ -3,7 +3,7 @@ body{
   padding: 0px;
 }
 body::-webkit-scrollbar{
-  display: none;
+  display: none ;
 }
 
 canvas{
@@ -784,6 +784,112 @@ footer{
   gap: 1rem;
   grid-template-columns: repeat(1, 1fr);
 }
+
+.profile-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.section-title {
+  font-size: 24px;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 5px;
+  color: #333;
+}
+
+.info-box {
+  background: #f7f7f7;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.section {
+  margin-top: 2rem;
+}
+
+.card-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: 0.3s ease;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: scale(1.02);
+  background: #f0f8ff;
+}
+
+.empty-msg {
+  text-align: center;
+  color: gray;
+  font-weight: 500;
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  width: 90%;
+  max-width: 600px;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  position: relative;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.modal-booking {
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+}
+
 
 @media (min-width: 768px) {
   .organisation-grid {
