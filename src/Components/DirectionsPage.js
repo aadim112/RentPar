@@ -49,6 +49,12 @@ const DirectionsPage = () => {
     );
     mapRef.current = map;
 
+    // Add event listener to know when map is loaded
+    map.addEventListener('mapviewchangeend', () => {
+      // The map has finished loading and rendering
+      // But keep loading state true until route calculation is complete
+    });
+
     // Enable zoom & pan controls
     const ui = window.H.ui.UI.createDefault(map, defaultLayers);
     new window.H.mapevents.Behavior(new window.H.mapevents.MapEvents(map));
@@ -90,14 +96,23 @@ const DirectionsPage = () => {
       { enableHighAccuracy: true }
     );
 
+    // Set a timeout to ensure loading ends even if there are issues
+    const loadingTimeout = setTimeout(() => {
+      if (isLoading) {
+        console.log("Loading timeout reached, forcing loading state off");
+        setIsLoading(false);
+      }
+    }, 10000); // 10 seconds max loading time
+
     return () => {
       // Clean up on unmount
+      clearTimeout(loadingTimeout);
       if (watchPositionIdRef.current) {
         navigator.geolocation.clearWatch(watchPositionIdRef.current);
       }
       map.dispose();
     };
-  }, [parkingLocation, navigate]);
+  }, [parkingLocation, navigate, isLoading]);
 
   const calculateRoute = (startLat, startLng, platform) => {
     const router = platform.getRoutingService(null, 8);
@@ -176,6 +191,7 @@ const DirectionsPage = () => {
         duration
       });
       
+      // Turn off loading indicator
       setIsLoading(false);
     }
   };
@@ -605,6 +621,7 @@ const DirectionsPage = () => {
           <button 
             className="navigation-action"
             onClick={navigationActive ? stopNavigation : startNavigation}
+            disabled={isLoading}
           >
             {navigationActive ? (
               <>
