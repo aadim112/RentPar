@@ -2,6 +2,7 @@ import '../App.css';
 import { set, ref, get } from 'firebase/database';
 import { db } from '../firebase';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = (props) => {
   const [userdata, setUserData] = useState({});
@@ -10,7 +11,8 @@ const Profile = (props) => {
   const [spaceBookings, setSpaceBookings] = useState([]);
   const [selectedSpaceName, setSelectedSpaceName] = useState('');
   const [showModal, setShowModal] = useState(false);
-
+  
+  const navigate = useNavigate();
   const uid = props.user.uid;
 
   const getUserData = async (uid) => {
@@ -75,6 +77,59 @@ const Profile = (props) => {
     }
   };
 
+  const handleNavigateToDirections = (booking) => {
+    // Check if the booking has location data
+    if (booking.location && booking.location.lat && booking.location.lng) {
+      navigate('/directions', {
+        state: {
+          parkingLocation: {
+            lat: booking.location.lat,
+            lng: booking.location.lng,
+            name: booking.details.fullname || 'Parking Space'
+          }
+        }
+      });
+    } else {
+      // If no location data in booking details, attempt to fetch from space ID
+      fetchSpaceLocation(booking.spaceId);
+    }
+  };
+
+  const fetchSpaceLocation = async (spaceId) => {
+    if (!spaceId) {
+      alert('No location data available for this booking');
+      return;
+    }
+
+    try {
+      const spaceRef = ref(db, `parkingSpaces/${spaceId}`);
+      const snapshot = await get(spaceRef);
+      
+      if (snapshot.exists()) {
+        const spaceData = snapshot.val();
+        
+        if (spaceData.latitude && spaceData.longitude) {
+          navigate('/directions', {
+            state: {
+              parkingLocation: {
+                lat: spaceData.latitude,
+                lng: spaceData.longitude,
+                name: spaceData.fullname || 'Parking Space'
+              }
+            }
+          });
+        } else {
+          alert('Location data not available for this space');
+        }
+      } else {
+        alert('Parking space not found');
+      }
+    } catch (error) {
+      console.error('Error fetching space location:', error);
+      alert('Failed to get directions: ' + error.message);
+    }
+  };
+
   useEffect(() => {
     if (uid) {
       getUserData(uid);
@@ -130,6 +185,12 @@ const Profile = (props) => {
                 <p><strong>Space:</strong> {booking.details?.fullname}</p>
                 <p><strong>Duration:</strong> {booking.duration} min</p>
                 <p><strong>Time:</strong> {new Date(booking.timestamp).toLocaleString()}</p>
+                <button 
+                  className='navigate-btn'
+                  onClick={() => handleNavigateToDirections(booking)}
+                >
+                  Get Directions
+                </button>
               </div>
             ))}
           </div>
@@ -161,6 +222,30 @@ const Profile = (props) => {
           </div>
         </div>
       )}
+
+      {/* Add CSS for the navigate button */}
+      <style>
+        {`
+        .navigate-btn {
+          background-color: #4285F4;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          padding: 8px 16px;
+          margin-top: 8px;
+          cursor: pointer;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+        }
+        
+        .navigate-btn:hover {
+          background-color: #3367D6;
+        }
+        `}
+      </style>
     </div>
   );
 };

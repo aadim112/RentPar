@@ -27,6 +27,9 @@ const PaymentGateway = () => {
 
   const Transactionid = Math.random().toString(36).substring(2, 15).toUpperCase();
 
+// Inside PaymentGateway.jsx - Update handlePayment function
+// Only showing the modified part, keep the rest of the code the same
+
 const handlePayment = (e) => {
   e.preventDefault();
   setIsProcessing(true);
@@ -41,7 +44,7 @@ const handlePayment = (e) => {
     paymentMethod: selectedMethod,
     transactionId: Transactionid,
     timestamp: new Date().toISOString(),
-    location : bookingInfo.location,
+    location: bookingInfo.location,
   };
 
   console.log("Transaction Details:", trasactionDetails);
@@ -68,7 +71,7 @@ const handlePayment = (e) => {
       });
       console.log("Parking space updated");
 
-      // Step 4: Save to user’s bookings
+      // Step 4: Save to user's bookings
       await set(userBookingRef, trasactionDetails);
       console.log("Transaction saved under user's bookings");
 
@@ -77,7 +80,7 @@ const handlePayment = (e) => {
     }
   };
 
-  // ✅ Call it
+  // Call it
   addTransactionToRealtimeDB();
 
   // Simulate payment processing
@@ -87,7 +90,16 @@ const handlePayment = (e) => {
 
     setTimeout(() => {
       setShowSuccess(false);
-      navigate('/');
+      // Replace the navigate('/') with navigation to directions page
+      navigate('/directions', { 
+        state: { 
+          parkingLocation: {
+            lat: bookingInfo.location.lat,
+            lng: bookingInfo.location.lng,
+            address: bookingInfo.location.address || bookingInfo.details.Name
+          } 
+        }
+      });
     }, 5000);
   }, 2000);
 };

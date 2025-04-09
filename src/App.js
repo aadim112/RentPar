@@ -12,6 +12,7 @@ import logo from './Assets/park white.png'
 import svglogo from './Assets/park.svg'
 import OrganisationalParking from './Components/OrganisationalParking';
 import PaymentGateway from './Components/PaymentGateway';
+import DirectionsPage from './Components/DirectionsPage';
 
 
 function App() {
@@ -95,6 +96,7 @@ function App() {
         <Route path='/profile' element={actionState ? <Profile user={sessionUser}/> : <SignUp onSetUser={handleSetUser} />}></Route>
         <Route path='/OrganisationParking' element={<OrganisationalParking/>}></Route>
         <Route path='/payment-gateway' element={<PaymentGateway/>}></Route>
+        <Route path='/directions' element={<DirectionsPage/>}></Route>
       </Routes>
       <footer>
         <p>The Website is held to copyright.</p>
