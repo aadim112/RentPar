@@ -129,6 +129,41 @@ const Profile = (props) => {
       alert('Failed to get directions: ' + error.message);
     }
   };
+  
+  // Function to check if booking is expired
+  const isBookingExpired = (booking) => {
+    // Get the booking start time from startTime field
+    const startTimeStr = booking.startTime; // "2025-04-09T10:38"
+    
+    // Parse duration from details
+    let durationInMinutes = 0;
+    if (booking.details && booking.details.Duration) {
+      // Parse duration like "20 minutes" to get just the number
+      const durationMatch = booking.details.Duration.match(/(\d+)/);
+      if (durationMatch && durationMatch[1]) {
+        durationInMinutes = parseInt(durationMatch[1], 10);
+      }
+    } else if (booking.duration) {
+      // If duration is directly available in number format
+      durationInMinutes = booking.duration;
+    }
+    
+    if (!startTimeStr || !durationInMinutes) {
+      return false;
+    }
+    
+    // Convert startTime to Date object
+    const startTime = new Date(startTimeStr);
+    
+    // Calculate end time by adding duration in minutes
+    const bookingEndTime = startTime.getTime() + (durationInMinutes * 60 * 1000);
+    
+    // Get current time
+    const currentTime = new Date().getTime();
+    
+    // Return true if current time is after booking end time
+    return currentTime > bookingEndTime;
+  };
 
   useEffect(() => {
     if (uid) {
@@ -179,20 +214,25 @@ const Profile = (props) => {
         <h2 className='section-title'>My Bookings</h2>
         {userBookings.length > 0 ? (
           <div className='card-list'>
-            {userBookings.map((booking, index) => (
-              <div className='card' key={index}>
-                <p><strong>Vehicle:</strong> {booking.vehicleNumber}</p>
-                <p><strong>Space:</strong> {booking.details?.fullname}</p>
-                <p><strong>Duration:</strong> {booking.duration} min</p>
-                <p><strong>Time:</strong> {new Date(booking.timestamp).toLocaleString()}</p>
-                <button 
-                  className='navigate-btn'
-                  onClick={() => handleNavigateToDirections(booking)}
-                >
-                  Get Directions
-                </button>
-              </div>
-            ))}
+            {userBookings.map((booking, index) => {
+              const expired = isBookingExpired(booking);
+              return (
+                <div className={`card ${expired ? 'expired-card' : ''}`} key={index}>
+                  <p><strong>Vehicle:</strong> {booking.vehicleNumber}</p>
+                  <p><strong>Space:</strong> {booking.details?.fullname}</p>
+                  <p><strong>Duration:</strong> {booking.details?.Duration || booking.duration + " min"}</p>
+                  <p><strong>Time:</strong> {booking.startTime ? new Date(booking.startTime).toLocaleString() : new Date(booking.timestamp).toLocaleString()}</p>
+                  {expired && <p className="expired-tag">EXPIRED</p>}
+                  <button 
+                    className={`navigate-btn ${expired ? 'disabled-btn' : ''}`}
+                    onClick={() => !expired && handleNavigateToDirections(booking)}
+                    disabled={expired}
+                  >
+                    Get Directions
+                  </button>
+                </div>
+              );
+            })}
           </div>
         ) : (
           <p className='empty-msg'>No bookings made yet</p>
@@ -208,14 +248,18 @@ const Profile = (props) => {
               <button onClick={() => setShowModal(false)} className='close-btn'>×</button>
             </div>
             {spaceBookings.length > 0 ? (
-              spaceBookings.map((booking, i) => (
-                <div key={i} className='modal-booking'>
-                  <p><strong>User:</strong> {booking.userId}</p>
-                  <p><strong>Vehicle:</strong> {booking.vehicleNumber}</p>
-                  <p><strong>Duration:</strong> {booking.duration} mins</p>
-                  <p><strong>Time:</strong> {new Date(booking.timestamp).toLocaleString()}</p>
-                </div>
-              ))
+              spaceBookings.map((booking, i) => {
+                const expired = isBookingExpired(booking);
+                return (
+                  <div key={i} className={`modal-booking ${expired ? 'expired-booking' : ''}`}>
+                    <p><strong>User:</strong> {booking.userId}</p>
+                    <p><strong>Vehicle:</strong> {booking.vehicleNumber}</p>
+                    <p><strong>Duration:</strong> {booking.details?.Duration || booking.duration + " mins"}</p>
+                    <p><strong>Time:</strong> {booking.startTime ? new Date(booking.startTime).toLocaleString() : new Date(booking.timestamp).toLocaleString()}</p>
+                    {expired && <p className="expired-tag">EXPIRED</p>}
+                  </div>
+                );
+              })
             ) : (
               <p>No bookings found for this space.</p>
             )}
@@ -223,12 +267,12 @@ const Profile = (props) => {
         </div>
       )}
 
-      {/* Add CSS for the navigate button */}
+      {/* Add CSS for the navigate button and expired status */}
       <style>
         {`
         .navigate-btn {
-          background-color: #4285F4;
-          color: white;
+          background-color: #ffd32c;
+          color: black;
           border: none;
           border-radius: 4px;
           padding: 8px 16px;
@@ -243,6 +287,35 @@ const Profile = (props) => {
         
         .navigate-btn:hover {
           background-color: #3367D6;
+        }
+        
+        .disabled-btn {
+          background-color: #cccccc !important;
+          color: #666666 !important;
+          cursor: not-allowed !important;
+        }
+        
+        .expired-card {
+          position: relative;
+          background-color: #fff5f5;
+        }
+        
+        .expired-booking {
+          position: relative;
+          border-left: 3px solid #ff6b6b;
+          background-color: #fff5f5;
+        }
+        
+        .expired-tag {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          background-color: #ff6b6b;
+          color: white;
+          padding: 3px 8px;
+          border-radius: 4px;
+          font-size: 12px;
+          font-weight: bold;
         }
         `}
       </style>

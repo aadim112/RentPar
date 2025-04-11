@@ -13,6 +13,7 @@ import svglogo from './Assets/park.svg'
 import OrganisationalParking from './Components/OrganisationalParking';
 import PaymentGateway from './Components/PaymentGateway';
 import DirectionsPage from './Components/DirectionsPage';
+import QrCodePage from './Components/QrCodePage';
 
 
 function App() {
@@ -97,6 +98,7 @@ function App() {
         <Route path='/OrganisationParking' element={<OrganisationalParking/>}></Route>
         <Route path='/payment-gateway' element={<PaymentGateway/>}></Route>
         <Route path='/directions' element={<DirectionsPage/>}></Route>
+        <Route path='/qr-code' element={<QrCodePage/>}></Route>
       </Routes>
       <footer>
         <p>The Website is held to copyright.</p>

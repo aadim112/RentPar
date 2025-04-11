@@ -198,7 +198,7 @@ header{
 }
 .add-space-container{
   width: 100%;
-  height: 1300px;
+  height: auto;
   background-color: #ffd32c;
   margin-top: 40px;
 }
@@ -823,7 +823,6 @@ footer{
   padding: 1rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: 0.3s ease;
 }
 
 .clickable {
@@ -890,6 +889,84 @@ footer{
   color: #333;
 }
 
+/* Search and Filter Styles */
+.search-filter-container {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+@media (min-width: 768px) {
+  .search-filter-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.search-bar {
+  flex: 1;
+}
+
+.search-input {
+  width: 80%;
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.filter-options {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.filter-select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  min-width: 180px;
+}
+
+.clear-filters-button {
+  padding: 10px 15px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.clear-filters-button:hover {
+  background-color: #e0e0e0;
+}
+
+.results-count {
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #666;
+}
+
+.no-results {
+  text-align: center;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+/* Update existing styles */
+.organisation-badge-full {
+  background-color: #f44336;
+  color: white;
+}
+
+.organisation-book-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
 
 @media (min-width: 768px) {
   .organisation-grid {
