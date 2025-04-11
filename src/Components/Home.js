@@ -13,6 +13,8 @@ const Home = (props) => {
     const [time, setTime] = useState(0);
     const [startTime, setStartTime] = useState('');
     const [vehicleNumber, setVehicleNumber] = useState("");
+    const [vehicleType, setVehicleType] = useState("");
+    const [error, setError] = useState("");
     const navigate = useNavigate(); // Initialize useNavigate
 
     const handleBook = (e) => {
@@ -25,11 +27,37 @@ const Home = (props) => {
             setVehicleNumber(value);
         } else if (name === "startTime") {
             setStartTime(value);
+        } else if (name === "vehicleType") {
+            setVehicleType(value);
+            setError(""); // Clear any existing errors when vehicle type changes
         }
     };
 
+    // Check if space is available for selected vehicle type
+    const isVehicleSpaceAvailable = () => {
+        if (!vehicleType || !tobookspace || !tobookspace.vehicleSpaces) {
+            return false;
+        }
+        
+        // Get allocated spaces and total capacity for this vehicle type
+        const allocated = tobookspace.vehicleSpaces[vehicleType] || 0;
+        const capacity = tobookspace.vehicleSpaces[`${vehicleType}Capacity`] || tobookspace.capacity || 0;
+        
+        return allocated < capacity;
+    };
+
     const BookSpace = async (e) => {
-        e.preventDefault(); // Prevent default form submission
+        e.preventDefault();
+    
+    if (!vehicleType) {
+        setError("Please select a vehicle type");
+        return;
+    }
+    
+    if (!isVehicleSpaceAvailable()) {
+        setError(`No spaces available for ${vehicleType}. Please select another vehicle type.`);
+        return;
+    }
         
         // Get current date in YYYY-MM-DD format
         const today = new Date().toISOString().split('T')[0];
@@ -39,10 +67,11 @@ const Home = (props) => {
         // Create booking info object
         const bookingInfo = {
             vehicleNumber: vehicleNumber,
+            vehicleType: vehicleType,
             price: cost,
             startTime: fullStartDateTime,
             details: {
-                "Vehicle Type": "SUV",
+                "Vehicle Type": vehicleType,
                 "Duration": `${time} minutes`,
                 "id": selectMarker.id || "id",
                 "Start Time": startTime,
@@ -57,12 +86,15 @@ const Home = (props) => {
         navigate('/payment-gateway', { 
             state: { bookingInfo } 
         });
+    
     }
 
     const close = (e) => {
         e.preventDefault();
         setCost(0);
         setStartTime('');
+        setVehicleType('');
+        setError('');
         document.getElementById('booking-form').style.display = 'none';
         document.getElementById('background-converter').style.display = 'none';
     }
@@ -75,6 +107,9 @@ const Home = (props) => {
     function handleBooking(bookingLocation){
         if(user){
             setToBookSpace(bookingLocation);
+            setVehicleType(''); // Reset vehicle type when opening booking form
+            setError(''); // Clear any previous errors
+            
             // Set default start time to current time (time only)
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -89,6 +124,14 @@ const Home = (props) => {
         }
     }
 
+    // Get available vehicle types from the selected parking space
+    const getAvailableVehicleTypes = () => {
+        if (!tobookspace || !tobookspace.ParkingType) {
+            return [];
+        }
+        return tobookspace.ParkingType;
+    };
+
     return(
     <>
         <p className='user'> Welcome! {props.name}</p>
@@ -101,12 +144,13 @@ const Home = (props) => {
                                 <div className='location-container' key={index} onClick={() => handleSelectedLocation(location)}>
                                     <div className='parking-name'><p>{`Parking ${index+1}`}</p></div>
                                     <div className='parking-type'>
-                                    {(location?.ParkingType[0] ==='Twowheels') && (<i className="fa-solid fa-motorcycle" style={{color: '#ffffff'}}></i>) }
-                                    {(location?.ParkingType[0] === 'FourWheels' || location?.ParkingType[1] ==='FourWheels') && (<i className="fa-solid fa-car" style={{color: '#ffffff'}}></i>) }
-                                    {(location?.ParkingType[0] === 'Heavy Vehicle' || location?.ParkingType[1] ==='Heavy Vehicle' || location?.ParkingType[2] ==='Heavy Vehicle') && (<i className="fa-solid fa-truck" style={{color: '#ffffff'}}></i>) }
+                                    {(location?.ParkingType.includes('Twowheels')) && (<i className="fa-solid fa-motorcycle" style={{color: '#ffffff'}}></i>) }
+                                    {(location?.ParkingType.includes('FourWheels')) && (<i className="fa-solid fa-car" style={{color: '#ffffff'}}></i>) }
+                                    {(location?.ParkingType.includes('Heavy Vehicle')) && (<i className="fa-solid fa-truck" style={{color: '#ffffff'}}></i>) }
+                                    {(location?.ParkingType.includes('ThreeWheels')) && (<i className="fa-solid fa-rickshaw" style={{color: '#ffffff'}}></i>) }
                                     </div>
                                     <p>{location.Price}/min</p>
-                                    <p>Occupied: {location.allocated}/{location.capacity}</p>
+                                    <p>Occupied: {location.vehicleSpaces ? `${location.vehicleSpaces.FourWheels || 0}/${location.vehicleSpaces.FourWheelsCapacity || location.capacity} cars` : `${location.allocated}/${location.capacity}`}</p>
                                     <div className='book-button' onClick={()=>handleBooking(location)}>Book</div>
                                 </div>
                             ))):(<p style={{marginLeft:'30px',fontFamily:'poppins',color:'white'}}>No Parking at searched location</p>)}
@@ -135,6 +179,29 @@ const Home = (props) => {
         <form className='booking-f'>
             <label>Vehicle Number</label>
             <input type='text' placeholder='Enter your vehicle number' name='vehicleNumber' value={vehicleNumber} onChange={handleBook} required></input>
+            
+            <label>Vehicle Type</label>
+            <select 
+    name='vehicleType' 
+    value={vehicleType} 
+    onChange={handleBook} 
+    required
+    style={{padding: '8px', marginBottom: '10px', width: '80%',borderRadius:'8px'}}
+>
+    <option value="">Select Vehicle Type</option>
+    {getAvailableVehicleTypes().map((type, index) => {
+        const allocated = tobookspace.vehicleSpaces?.[type] || 0;
+        const capacity = tobookspace.vehicleSpaces?.[`${type}Capacity`] || tobookspace.capacity || 0;
+        const isFull = allocated >= capacity;
+        
+        return (
+            <option key={index} value={type} disabled={isFull}>
+                {type} ({allocated}/{capacity}) {isFull ? '(Full)' : ''}
+            </option>
+        );
+    })}
+</select>
+            {error && <p style={{color: 'red', fontSize: '14px', margin: '5px 0'}}>{error}</p>}
             
             <label>Start Time</label>
             <input 

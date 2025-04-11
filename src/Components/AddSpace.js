@@ -17,10 +17,10 @@ const AddSpace = (props) => {
     SpaceBelonging: "",
     ParkingType: [],
     vehicleSpaces: {
-      Twowheels: 0,
-      ThreeWheels: 0,
-      FourWheels: 0,
-      HeavyVehicle: 0
+      Twowheels: {capacity: 0, allocated: 0},
+      ThreeWheels: {capacity: 0, allocated: 0},
+      FourWheels: {capacity: 0, allocated: 0},
+      HeavyVehicle: {capacity: 0, allocated: 0}
     },
     capacity: 1,
     Price: 0,
@@ -157,7 +157,7 @@ const AddSpace = (props) => {
               min="0"
               placeholder="Number of spaces" 
               name="spaces-Twowheels" 
-              value={spacedetails.vehicleSpaces.Twowheels}
+              value={spacedetails.vehicleSpaces.Twowheels.capacity}
               onChange={handleChange}
             />
           </div>
@@ -171,7 +171,7 @@ const AddSpace = (props) => {
               min="0"
               placeholder="Number of spaces" 
               name="spaces-ThreeWheels" 
-              value={spacedetails.vehicleSpaces.ThreeWheels}
+              value={spacedetails.vehicleSpaces.ThreeWheels.capacity}
               onChange={handleChange}
             />
           </div>
@@ -185,7 +185,7 @@ const AddSpace = (props) => {
               min="0"
               placeholder="Number of spaces" 
               name="spaces-FourWheels" 
-              value={spacedetails.vehicleSpaces.FourWheels}
+              value={spacedetails.vehicleSpaces.FourWheels.capacity}
               onChange={handleChange}
             />
           </div>
@@ -199,7 +199,7 @@ const AddSpace = (props) => {
               min="0"
               placeholder="Number of spaces" 
               name="spaces-HeavyVehicle" 
-              value={spacedetails.vehicleSpaces.HeavyVehicle}
+              value={spacedetails.vehicleSpaces.HeavyVehicle.capacity}
               onChange={handleChange}
             />
           </div>

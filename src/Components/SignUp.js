@@ -12,6 +12,7 @@ const SignUp = ({ onSetUser }) =>{
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [name,setName] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [action,setAction] = useState('Login');
 
     const [sessionUser, setSessionUser] = useState(() => {
@@ -21,11 +22,11 @@ const SignUp = ({ onSetUser }) =>{
 
     const navigate = useNavigate();
 
-      useEffect(() => {
+    useEffect(() => {
         if (onSetUser) {
           onSetUser(sessionUser);
         }
-      }, [sessionUser]);
+    }, [sessionUser, onSetUser]);
 
     function manageAccount(value){
         setAction(value);
@@ -55,10 +56,23 @@ const SignUp = ({ onSetUser }) =>{
         } catch (err) {
           setError('Invalid Credentials');
         }
-      };
+    };
       
-      const handleSignup = async (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
+        
+        // Basic validations
+        if (!name || !email || !password || !phoneNumber) {
+            setError("All fields are required");
+            return;
+        }
+        
+        // Validate phone number (simple check for now)
+        if (!/^\d{10}$/.test(phoneNumber)) {
+            setError("Please enter a valid 10-digit phone number");
+            return;
+        }
+        
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
@@ -66,20 +80,24 @@ const SignUp = ({ onSetUser }) =>{
             // 🔹 Update user profile in Firebase Auth
             await updateProfile(user, { displayName: name });
 
-            // 🔹 Store user in Firebase Realtime Database
+            // 🔹 Store user in Firebase Realtime Database with phone number
             const db = getDatabase();
             set(ref(db, "users/" + user.uid), {
                 uid: user.uid,
                 name: name,
                 email: email,
-                createdAt: new Date().toISOString()
+                phone: phoneNumber,
+                createdAt: new Date().toISOString(),
+                space: []
             });
 
             // 🔹 Store session data
             const userData = {
                 uid: user.uid,
                 name: name,
-                email: email
+                email: email,
+                phone: phoneNumber,
+                spaces: []
             };
 
             setSessionUser(userData);
@@ -91,10 +109,6 @@ const SignUp = ({ onSetUser }) =>{
             setError(err.message);
         }
     };
-
-
-
-        
 
     return(
         <div style={{width:'100%',height:'auto',display:'flex',alignItems:'center',justifyContent:'center'}}>
@@ -117,6 +131,16 @@ const SignUp = ({ onSetUser }) =>{
                     <input type='text' placeholder='Full Name' name='name' value={name} onChange={(e) => setName(e.target.value)} required></input>
                     <label>Email</label>
                     <input type='email' placeholder='Email' name='email' value={email} onChange={(e) => setEmail(e.target.value)} required></input>
+                    <label>Phone Number</label>
+                    <input 
+                        type='tel' 
+                        placeholder='10-digit phone number' 
+                        name='phone' 
+                        value={phoneNumber} 
+                        onChange={(e) => setPhoneNumber(e.target.value)} 
+                        pattern="[0-9]{10}" 
+                        required
+                    ></input>
                     <label>Password</label>
                     <input type='Password' placeholder='Password' name='password' value={password} onChange={(e) => setPassword(e.target.value)} required></input>
                     <input type='Password' placeholder='Confirm Password'></input>
