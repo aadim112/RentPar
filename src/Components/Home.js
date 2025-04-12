@@ -33,31 +33,13 @@ const Home = (props) => {
         }
     };
 
-    // Check if space is available for selected vehicle type
-    const isVehicleSpaceAvailable = () => {
-        if (!vehicleType || !tobookspace || !tobookspace.vehicleSpaces) {
-            return false;
-        }
-        
-        // Get allocated spaces and total capacity for this vehicle type
-        const allocated = tobookspace.vehicleSpaces[vehicleType] || 0;
-        const capacity = tobookspace.vehicleSpaces[`${vehicleType}Capacity`] || tobookspace.capacity || 0;
-        
-        return allocated < capacity;
-    };
-
     const BookSpace = async (e) => {
         e.preventDefault();
     
-    if (!vehicleType) {
-        setError("Please select a vehicle type");
-        return;
-    }
-    
-    if (!isVehicleSpaceAvailable()) {
-        setError(`No spaces available for ${vehicleType}. Please select another vehicle type.`);
-        return;
-    }
+        if (!vehicleType) {
+            setError("Please select a vehicle type");
+            return;
+        }
         
         // Get current date in YYYY-MM-DD format
         const today = new Date().toISOString().split('T')[0];
@@ -86,7 +68,6 @@ const Home = (props) => {
         navigate('/payment-gateway', { 
             state: { bookingInfo } 
         });
-    
     }
 
     const close = (e) => {
@@ -150,7 +131,7 @@ const Home = (props) => {
                                     {(location?.ParkingType.includes('ThreeWheels')) && (<i className="fa-solid fa-rickshaw" style={{color: '#ffffff'}}></i>) }
                                     </div>
                                     <p>{location.Price}/min</p>
-                                    <p>Occupied: {location.vehicleSpaces ? `${location.vehicleSpaces.FourWheels || 0}/${location.vehicleSpaces.FourWheelsCapacity || location.capacity} cars` : `${location.allocated}/${location.capacity}`}</p>
+                                    <p>Occupied: {location.allocated}/{location.capacity}</p>
                                     <div className='book-button' onClick={()=>handleBooking(location)}>Book</div>
                                 </div>
                             ))):(<p style={{marginLeft:'30px',fontFamily:'poppins',color:'white'}}>No Parking at searched location</p>)}
@@ -182,25 +163,24 @@ const Home = (props) => {
             
             <label>Vehicle Type</label>
             <select 
-    name='vehicleType' 
-    value={vehicleType} 
-    onChange={handleBook} 
-    required
-    style={{padding: '8px', marginBottom: '10px', width: '80%',borderRadius:'8px'}}
->
-    <option value="">Select Vehicle Type</option>
-    {getAvailableVehicleTypes().map((type, index) => {
-        const allocated = tobookspace.vehicleSpaces?.[type] || 0;
-        const capacity = tobookspace.vehicleSpaces?.[`${type}Capacity`] || tobookspace.capacity || 0;
-        const isFull = allocated >= capacity;
-        
-        return (
-            <option key={index} value={type} disabled={isFull}>
-                {type} ({allocated}/{capacity}) {isFull ? '(Full)' : ''}
-            </option>
-        );
-    })}
-</select>
+                name='vehicleType' 
+                value={vehicleType} 
+                onChange={handleBook} 
+                required
+                style={{padding: '8px', marginBottom: '10px', width: '80%',borderRadius:'8px'}}
+            >
+                <option value="">Select Vehicle Type</option>
+                {getAvailableVehicleTypes().map((type, index) => {
+                    const allocated = tobookspace.vehicleSpaces?.[type] || 0;
+                    const capacity = tobookspace.vehicleSpaces?.[`${type}Capacity`] || tobookspace.capacity || 0;
+                    
+                    return (
+                        <option key={index} value={type}>
+                            {type} ({allocated}/{capacity})
+                        </option>
+                    );
+                })}
+            </select>
             {error && <p style={{color: 'red', fontSize: '14px', margin: '5px 0'}}>{error}</p>}
             
             <label>Start Time</label>
