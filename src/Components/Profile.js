@@ -15,6 +15,9 @@ const Profile = (props) => {
   const [refundReason, setRefundReason] = useState('');
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelBooking, setCancelBooking] = useState(null);
+  const [showCancelSuccess, setShowCancelSuccess] = useState(false);
   
   const navigate = useNavigate();
   const uid = props.user.uid;
@@ -163,10 +166,30 @@ const Profile = (props) => {
     return currentTime > bookingEndTime;
   };
 
+  // Check if a booking is upcoming (hasn't started yet)
+  const isBookingUpcoming = (booking) => {
+    const startTimeStr = booking.startTime;
+    
+    if (!startTimeStr) {
+      return false;
+    }
+    
+    const startTime = new Date(startTimeStr);
+    const currentTime = new Date().getTime();
+    
+    return currentTime < startTime.getTime();
+  };
+
   // Handle refund request initiation
   const handleRefundRequest = (booking) => {
     setSelectedBooking(booking);
     setShowRefundModal(true);
+  };
+
+  // Handle cancel booking
+  const handleCancelBooking = (booking) => {
+    setCancelBooking(booking);
+    setShowCancelModal(true);
   };
 
   // Submit refund request to Firebase
@@ -223,6 +246,74 @@ const Profile = (props) => {
     }
   };
 
+  // Submit booking cancellation
+  const submitCancellation = async () => {
+    try {
+      const originalPrice = cancelBooking.price || 0;
+      const penaltyAmount = originalPrice * 0.1; // 10% penalty
+      const refundAmount = originalPrice - penaltyAmount;
+
+      // Update transaction record
+      const transactionRef = ref(db, `transactions/${cancelBooking.transactionId}`);
+      await update(transactionRef, {
+        cancelled: true,
+        cancellationDate: new Date().toISOString(),
+        refundAmount: refundAmount.toFixed(2),
+        penaltyAmount: penaltyAmount.toFixed(2),
+        status: 'cancelled'
+      });
+
+      // Update user's booking record
+      const userBookingRef = ref(db, `users/${uid}/bookings/${cancelBooking.transactionId}`);
+      await update(userBookingRef, {
+        cancelled: true,
+        cancellationDate: new Date().toISOString(),
+        refundAmount: refundAmount.toFixed(2),
+        penaltyAmount: penaltyAmount.toFixed(2),
+        status: 'cancelled'
+      });
+
+      // Update parking space's booking record if spaceId exists
+      if (cancelBooking.spaceId) {
+        const spaceBookingRef = ref(db, `parkingSpaces/${cancelBooking.spaceId}/bookings/${cancelBooking.transactionId}`);
+        await update(spaceBookingRef, {
+          cancelled: true,
+          cancellationDate: new Date().toISOString(),
+          status: 'cancelled'
+        });
+
+        // Update space allocations
+        const spaceRef = ref(db, `parkingSpaces/${cancelBooking.spaceId}`);
+        const spaceSnapshot = await get(spaceRef);
+        if (spaceSnapshot.exists()) {
+          const spaceData = spaceSnapshot.val();
+          const currentAllocated = spaceData.allocated || 0;
+          if (currentAllocated > 0) {
+            await update(spaceRef, {
+              allocated: currentAllocated - 1
+            });
+          }
+        }
+      }
+
+      // Show success and reset form
+      setShowCancelModal(false);
+      setShowCancelSuccess(true);
+      
+      // Refresh bookings data
+      getUserBookings(uid);
+
+      // Hide success message after 3 seconds
+      setTimeout(() => {
+        setShowCancelSuccess(false);
+      }, 3000);
+
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+      alert("Failed to cancel booking. Please try again.");
+    }
+  };
+
   // Load user data and bookings on component mount
   useEffect(() => {
     if (uid) {
@@ -276,32 +367,39 @@ const Profile = (props) => {
           <div className='card-list'>
             {userBookings.map((booking, index) => {
               const expired = isBookingExpired(booking);
+              const upcoming = isBookingUpcoming(booking);
               const canRequestRefund = !booking.refundRequested && 
                                       !expired && 
                                       booking.paymentStatus === 'completed';
+              const canCancel = !booking.cancelled && 
+                               upcoming && 
+                               booking.paymentStatus === 'completed';
               const refundPending = booking.refundRequested && 
                                    booking.refundStatus === 'pending';
               const refundProcessed = booking.refundRequested && 
                                      booking.refundStatus === 'processed';
+              const isCancelled = booking.cancelled === true;
 
               return (
-                <div className={`card ${expired ? 'expired-card' : ''}`} key={index}>
+                <div className={`card ${expired ? 'expired-card' : ''} ${isCancelled ? 'cancelled-card' : ''}`} key={index}>
                   <p><strong>Vehicle:</strong> {booking.vehicleNumber}</p>
                   <p><strong>Space:</strong> {booking.details?.fullname}</p>
                   <p><strong>Duration:</strong> {booking.details?.Duration || booking.duration + " min"}</p>
                   <p><strong>Time:</strong> {booking.startTime ? new Date(booking.startTime).toLocaleString() : new Date(booking.timestamp).toLocaleString()}</p>
                   <p><strong>Amount:</strong> ₹{booking.price?.toFixed(2) || 'N/A'}</p>
-                  <p><strong>Status:</strong> {booking.paymentStatus || 'completed'}</p>
+                  <p><strong>Status:</strong> {isCancelled ? 'Cancelled' : booking.paymentStatus || 'completed'}</p>
                   
                   {expired && <p className="expired-tag">EXPIRED</p>}
+                  {upcoming && !isCancelled && <p className="upcoming-tag">UPCOMING</p>}
                   {refundPending && <p className="refund-pending-tag">REFUND PENDING</p>}
                   {refundProcessed && <p className="refund-processed-tag">REFUND PROCESSED</p>}
+                  {isCancelled && <p className="cancelled-tag">CANCELLED</p>}
                   
                   <div className="booking-actions">
                     <button 
-                      className={`navigate-btn ${expired ? 'disabled-btn' : ''}`}
-                      onClick={() => !expired && handleNavigateToDirections(booking)}
-                      disabled={expired}
+                      className={`navigate-btn ${expired || isCancelled ? 'disabled-btn' : ''}`}
+                      onClick={() => !expired && !isCancelled && handleNavigateToDirections(booking)}
+                      disabled={expired || isCancelled}
                     >
                       Get Directions
                     </button>
@@ -312,6 +410,15 @@ const Profile = (props) => {
                         onClick={() => handleRefundRequest(booking)}
                       >
                         Request Refund
+                      </button>
+                    )}
+
+                    {canCancel && (
+                      <button 
+                        className="cancel-btn"
+                        onClick={() => handleCancelBooking(booking)}
+                      >
+                        Cancel Booking
                       </button>
                     )}
                   </div>
@@ -335,13 +442,15 @@ const Profile = (props) => {
             {spaceBookings.length > 0 ? (
               spaceBookings.map((booking, i) => {
                 const expired = isBookingExpired(booking);
+                const isCancelled = booking.cancelled === true;
                 return (
-                  <div key={i} className={`modal-booking ${expired ? 'expired-booking' : ''}`}>
+                  <div key={i} className={`modal-booking ${expired ? 'expired-booking' : ''} ${isCancelled ? 'cancelled-booking' : ''}`}>
                     <p><strong>User:</strong> {booking.userId}</p>
                     <p><strong>Vehicle:</strong> {booking.vehicleNumber}</p>
                     <p><strong>Duration:</strong> {booking.details?.Duration || booking.duration + " mins"}</p>
                     <p><strong>Time:</strong> {booking.startTime ? new Date(booking.startTime).toLocaleString() : new Date(booking.timestamp).toLocaleString()}</p>
                     {expired && <p className="expired-tag">EXPIRED</p>}
+                    {isCancelled && <p className="cancelled-tag">CANCELLED</p>}
                   </div>
                 );
               })
@@ -387,6 +496,47 @@ const Profile = (props) => {
         </div>
       )}
 
+      {/* Cancel Booking Modal */}
+      {showCancelModal && cancelBooking && (
+        <div className='modal-overlay'>
+          <div className='modal'>
+            <div className='modal-header'>
+              <h3>Cancel Booking</h3>
+              <button onClick={() => setShowCancelModal(false)} className='close-btn'>×</button>
+            </div>
+            <div className='modal-content'>
+              <div className='warning-icon'>⚠️</div>
+              <h4>Are you sure you want to cancel this booking?</h4>
+              <p><strong>Vehicle:</strong> {cancelBooking?.vehicleNumber}</p>
+              <p><strong>Space:</strong> {cancelBooking?.details?.fullname}</p>
+              <p><strong>Time:</strong> {cancelBooking?.startTime ? new Date(cancelBooking.startTime).toLocaleString() : 'N/A'}</p>
+              
+              <div className='penalty-notice'>
+                <p><strong>Please Note:</strong> A cancellation penalty of 10% will be charged.</p>
+                <p><strong>Original Amount:</strong> ₹{cancelBooking?.price?.toFixed(2) || '0.00'}</p>
+                <p><strong>Penalty (10%):</strong> ₹{(cancelBooking?.price * 0.1).toFixed(2) || '0.00'}</p>
+                <p><strong>Refund Amount:</strong> ₹{(cancelBooking?.price * 0.9).toFixed(2) || '0.00'}</p>
+              </div>
+              
+              <div className='action-buttons'>
+                <button 
+                  className='cancel-action-btn'
+                  onClick={() => setShowCancelModal(false)}
+                >
+                  No, Keep Booking
+                </button>
+                <button 
+                  className='confirm-cancel-btn'
+                  onClick={submitCancellation}
+                >
+                  Yes, Cancel Booking
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Refund Success Modal */}
       {showSuccess && (
         <div className='modal-overlay'>
@@ -401,6 +551,28 @@ const Profile = (props) => {
               <button 
                 className='close-success-btn'
                 onClick={() => setShowSuccess(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancellation Success Modal */}
+      {showCancelSuccess && (
+        <div className='modal-overlay'>
+          <div className='modal success-modal'>
+            <div className='modal-header'>
+              <h3>Booking Cancelled</h3>
+            </div>
+            <div className='modal-content'>
+              <div className='success-icon'>✓</div>
+              <p>Your booking has been cancelled successfully.</p>
+              <p>₹{(cancelBooking?.price * 0.9).toFixed(2)} will be refunded to your original payment method within 5-7 business days.</p>
+              <button 
+                className='close-success-btn'
+                onClick={() => setShowCancelSuccess(false)}
               >
                 Close
               </button>
@@ -519,22 +691,46 @@ const Profile = (props) => {
           background-color: #fff5f5;
         }
         
-        .expired-tag {
+        .cancelled-card {
+          background-color: #f8f9fa;
+          opacity: 0.8;
+        }
+        
+        .cancelled-booking {
+          border-left: 3px solid #6c757d;
+          background-color: #f8f9fa;
+        }
+        
+        .expired-tag, .cancelled-tag, .upcoming-tag, .refund-pending-tag, .refund-processed-tag {
           position: absolute;
           top: 10px;
           right: 10px;
-          background-color: #ff6b6b;
-          color: white;
           padding: 3px 8px;
           border-radius: 4px;
           font-size: 12px;
           font-weight: bold;
         }
         
+        .expired-tag {
+          background-color: #ff6b6b;
+          color: white;
+        }
+        
+        .cancelled-tag {
+          background-color: #6c757d;
+          color: white;
+        }
+        
+        .upcoming-tag {
+          background-color: #17a2b8;
+          color: white;
+        }
+        
         .booking-actions {
           display: flex;
           gap: 10px;
           margin-top: 10px;
+          flex-wrap: wrap;
         }
         
         .navigate-btn {
@@ -571,28 +767,29 @@ const Profile = (props) => {
           color: white;
         }
         
+        .cancel-btn {
+          background-color: #f8f9fa;
+          color: #6c757d;
+          border: 1px solid #6c757d;
+          border-radius: 4px;
+          padding: 8px 16px;
+          cursor: pointer;
+          flex: 1;
+        }
+        
+        .cancel-btn:hover {
+          background-color: #6c757d;
+          color: white;
+        }
+        
         .refund-pending-tag {
-          position: absolute;
-          top: 10px;
-          right: 10px;
           background-color: #ffc107;
           color: black;
-          padding: 3px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-          font-weight: bold;
         }
         
         .refund-processed-tag {
-          position: absolute;
-          top: 10px;
-          right: 10px;
           background-color: #28a745;
           color: white;
-          padding: 3px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-          font-weight: bold;
         }
         
         .modal-content {
@@ -642,6 +839,13 @@ const Profile = (props) => {
           margin: 15px 0;
         }
         
+        .warning-icon {
+          font-size: 48px;
+          color: #ffc107;
+          margin: 15px 0;
+          text-align: center;
+        }
+        
         .close-success-btn {
           background-color: #6c757d;
           color: white;
@@ -654,6 +858,110 @@ const Profile = (props) => {
         
         .close-success-btn:hover {
           background-color: #5a6268;
+        }
+        
+        .penalty-notice {
+          background-color: #fff3cd;
+          border: 1px solid #ffeeba;
+          border-radius: 4px;
+          padding: 15px;
+          margin: 15px 0;
+        }
+        
+        .action-buttons {
+          display: flex;
+          gap: 10px;
+          margin-top: 20px;
+        }
+        
+        .cancel-action-btn {
+          background-color: #f8f9fa;
+          color: #6c757d;
+          border: 1px solid #6c757d;
+          border-radius: 4px;
+          padding: 10px 20px;
+          cursor: pointer;
+          flex: 1;
+        }
+        
+        .cancel-action-btn:hover {
+          background-color: #e2e6ea;
+        }
+        
+        .confirm-cancel-btn {
+          background-color: #dc3545;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          padding: 10px 20px;
+          cursor: pointer;
+          flex: 1;
+        }
+        
+        .confirm-cancel-btn:hover {
+          background-color: #c82333;
+        }
+        
+        @media (max-width: 768px) {
+          .card-list {
+            grid-template-columns: 1fr;
+          }
+          
+          .booking-actions {
+            flex-direction: column;
+          }
+          
+          .modal {
+            width: 95%;
+          }
+          
+          .action-buttons {
+            flex-direction: column;
+          }
+        }
+        
+        /* Additional styles for different status indicators */
+        .status-indicator {
+          display: inline-block;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          margin-right: 5px;
+        }
+        
+        .status-active {
+          background-color: #28a745;
+        }
+        
+        .status-pending {
+          background-color: #ffc107;
+        }
+        
+        .status-completed {
+          background-color: #17a2b8;
+        }
+        
+        /* Styles for the empty state suggestions */
+        .empty-suggestions {
+          text-align: center;
+          padding: 20px;
+          background-color: #f8f9fa;
+          border-radius: 8px;
+          margin-top: 15px;
+        }
+        
+        .suggestion-btn {
+          background-color: #007bff;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          padding: 10px 15px;
+          cursor: pointer;
+          margin-top: 10px;
+        }
+        
+        .suggestion-btn:hover {
+          background-color: #0069d9;
         }
         `}
       </style>
